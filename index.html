@@ -7,6 +7,9 @@
 <meta name="theme-color" content="#0c1114" media="(prefers-color-scheme: dark)">
 <title>Segel Check</title>
 <meta name="description" content="Segel-Vorhersage für den Walensee ab Gäsi: Wind für Einsteiger auf der Esse 750, Modellvergleich, Gewitterrisiko, Webcams und Windy-Overlay.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 /* Flat/Material-Look (ca. 2014-2019, übernommen von kite-page.html): dunkle Navbar, Karten mit leichtem Schatten, 4px-Radius, System-Sans */
 :root{
@@ -17,7 +20,7 @@
   --nav:#263238; --nav-ink:#ffffff; --nav-muted:rgba(255,255,255,.72); --nav-accent:#64b5f6;
   --go:#2e7d32;
   --go-fill:#2e7d32;    --go-ink:#ffffff;
-  --ok-fill:#eaf5e4;    --ok-ink:#23500f;    --ok-line:#7cb342;
+  --ok-fill:#eaf5e4;    --ok-ink:#23500f;    --ok-line:#7cb342;    --ok-bar:#7cb342;
   --calm-fill:#0277bd;  --calm-ink:#ffffff;
   --storm-fill:#6a1b9a; --storm-ink:#ffffff;
   --maybe-fill:#ffb300; --maybe-ink:#212121;
@@ -38,7 +41,7 @@
     --nav:#0c1114; --nav-accent:#64b5f6;
     --go:#81c784;
     --go-fill:#66bb6a;    --go-ink:#0b2a10;
-    --ok-fill:#1f3a24;    --ok-ink:#c8e6c9;    --ok-line:#66bb6a;
+    --ok-fill:#1f3a24;    --ok-ink:#c8e6c9;    --ok-line:#66bb6a;    --ok-bar:#2e7d32;   /* dunkel: segelbar gedämpft, sonst gleich wie ideal (--go-fill) */
     --calm-fill:#4fc3f7;  --calm-ink:#02202e;
     --storm-fill:#ce93d8; --storm-ink:#1f0a26;
     --maybe-fill:#ffca28; --maybe-ink:#2a2000;
@@ -98,7 +101,7 @@ section>h2 small{font-weight:400;color:var(--muted);font-size:.82rem}
 
 /* ---- Fazit: oben die Antwort, darunter die Tage als Kacheln mit Stundenbalken ---- */
 /* .st-<Zustand> setzt die Zustandsfarbe --st, Rand und Tönung von Antwort, Kacheln und Detail leiten sich davon ab */
-.st-top{--st:var(--go-fill)} .st-ok{--st:var(--ok-line)} .st-maybe{--st:var(--maybe-fill)} .st-calm{--st:var(--calm-fill)}
+.st-top{--st:var(--go-fill)} .st-ok{--st:var(--ok-bar)} .st-maybe{--st:var(--maybe-fill)} .st-calm{--st:var(--calm-fill)}
 .st-strong,.st-no{--st:var(--no-fill)} .st-storm{--st:var(--storm-fill)} .st-over{--st:var(--over-fill)}
 .hero{display:flex;align-items:center;gap:16px;margin-bottom:12px;border-left:4px solid var(--st,var(--line-2))}
 .hero-ico{flex:none;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--st,var(--line-2)) 24%,var(--surface))}
@@ -107,6 +110,8 @@ section>h2 small{font-weight:400;color:var(--muted);font-size:.82rem}
 .headline{font-size:1.65rem;line-height:1.2;font-weight:500;margin:0 0 2px}
 .hero-sub{margin:0;font-weight:500}
 .lead{margin:2px 0 0;color:var(--muted)}
+.hero-fit{display:flex;gap:6px;align-items:baseline;margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:.92rem}
+.hero-fit .emo{margin:0}
 .days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:6px}
 .day{
   text-align:left;background:color-mix(in srgb,var(--st,transparent) 9%,var(--surface));border:1px solid var(--line);border-top:4px solid var(--st,var(--line-2));border-radius:var(--r);
@@ -121,11 +126,13 @@ section>h2 small{font-weight:400;color:var(--muted);font-size:.82rem}
 .day-state .emo{margin:0;font-size:1.5rem}
 .day-main{font-size:1.15rem;font-weight:500}
 .day-sub{font-size:.86rem;color:var(--muted)}
+.day-temp{font-size:.84rem;color:var(--muted)}
+.day-temp .emo{margin-right:.15em}
 .day-agree{font-size:.8rem;color:var(--muted)}
 .hours{display:grid;grid-template-columns:repeat(var(--n,11),1fr);gap:2px;margin-top:auto;padding-top:8px}   /* unten in der Kachel, damit die Balken auf einer Linie stehen */
 .hours i,.hours-legend i{height:10px;border-radius:2px;background:var(--hc)}
 .hours i.past{opacity:.3}
-.h-top{--hc:var(--go-fill)} .h-ok{--hc:var(--ok-line)} .h-calm{--hc:var(--calm-fill)} .h-strong{--hc:var(--no-fill)} .h-storm{--hc:var(--storm-fill)} .h-night,.h-none{--hc:var(--line-2)}
+.h-top{--hc:var(--go-fill)} .h-ok{--hc:var(--ok-bar)} .h-calm{--hc:var(--calm-fill)} .h-strong{--hc:var(--no-fill)} .h-storm{--hc:var(--storm-fill)} .h-night,.h-none{--hc:var(--line-2)}
 .hours-ax{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:1px}
 .hours-legend{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:.78rem;color:var(--muted);margin:0 0 10px}
 .hours-legend span{display:inline-flex;align-items:center;gap:5px}
@@ -235,6 +242,25 @@ tbody tr:nth-child(even){background:var(--surface-2)}
   .frame iframe{height:min(62vh,480px);min-height:320px}
   .overlay-bar .sp{display:none}
 }
+
+/* ---- Grosse Anzeige für schlechtere Augen: Klasse "gross" auf <html>, gesetzt von wantsBig() im Skript ----
+   Alles hier greift nur mit dieser Klasse, die normale Ansicht bleibt unverändert. */
+html.gross{font-size:20px;--muted:#4b5963}
+@media (prefers-color-scheme: dark){html.gross{--muted:#dde3e6}}
+.gross .top{position:static}   /* der Kopf wird mit grosser Schrift hoch, mitlaufend würde er den halben Bildschirm decken */
+.gross .hero{flex-direction:column;align-items:flex-start;gap:8px}
+.gross .hero-ico{width:48px;height:48px}
+.gross .hero-ico .emo{font-size:1.6rem}
+.gross .days{grid-template-columns:1fr;gap:10px}
+.gross .day{flex-direction:row;flex-wrap:wrap;align-items:center;gap:2px 14px;padding:10px 12px}
+.gross .day-name{flex:1 0 100%}
+.gross .day-name small{display:inline;margin-left:6px}
+.gross .day-state{flex-direction:row;align-items:center;gap:6px;font-size:1rem;line-height:1.3}
+.gross .day-main{font-size:1.1rem}
+.gross .day-sub{display:none}
+.gross .hours,.gross .hours-ax{flex:1 0 100%}
+.gross .hours i{height:16px}
+.gross .axis text{font-size:14px}
 </style>
 </head>
 <body>
@@ -307,8 +333,20 @@ const CFG = {
   CAPE: 800,       // J/kg, ab hier Gewitterrisiko (oder Wettercode 95 und höher)
   STRONG_WARN: 25, // kn, Böen ab hier: Niveau der Starkwindwarnung der MeteoSchweiz
   GO_HOURS: 3,     // Stunden am Stück für "Ideal zum Üben" und "Segelbar"
-  H0: 9, H1: 19    // frühester Start / spätestes Ende (zusätzlich begrenzt durch das Tageslicht)
+  H0: 9, H1: 19,   // frühester Start / spätestes Ende (zusätzlich begrenzt durch das Tageslicht)
+  RAIN: 0.2        // mm pro Stunde, ab hier kommt wasserdichte Kleidung zum Outfit dazu
 };
+
+// Outfit nach der gefühlten Temperatur (°C) der kältesten Stunde im Fenster: [unter, Emoji, Stichworte]. Annahmen von Claude, Stand 2026-10-28.
+// Auf dem Wasser ist es windiger und kühler als an Land, darum lieber eine Schicht mehr.
+const OUTFIT = [
+  [5,        '🧤', 'Thermo-Unterwäsche, Fleece, Segeljacke und -hose, Mütze, Handschuhe'],
+  [10,       '🧥', 'Lange Unterwäsche, Fleece, Segeljacke, lange Hose, Mütze'],
+  [15,       '🧥', 'Pulli, winddichte Jacke, lange Hose'],
+  [20,       '👕', 'T-Shirt, Pulli und Windjacke dabei, lange Hose'],
+  [25,       '👕', 'T-Shirt, Shorts, Windjacke dabei, Sonnenschutz'],
+  [Infinity, '🧢', 'T-Shirt, Shorts, Hut, Sonnencreme, viel Wasser']
+];
 
 const MODELS = [
   { id:'meteoswiss_icon_ch1', label:'ICON-CH1', res:'1 km',  hires:true,  css:'--m1' },
@@ -408,8 +446,8 @@ function loadSpot(spot) {
   if (cache.has(spot.id)) return cache.get(spot.id);
   const common = `latitude=${spot.lat}&longitude=${spot.lon}&wind_speed_unit=kn&timezone=Europe%2FZurich&forecast_days=3`;
   const wind = getJson(`${API}?${common}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&models=${MODELS.map(m => m.id).join(',')}`);
-  // Gewitterpotenzial, Regen und Tageslicht: ohne diese Daten läuft die Seite weiter, nur ohne Gewitterwarnung
-  const wx = getJson(`${API}?${common}&hourly=cape,weather_code,precipitation&daily=sunrise,sunset`).catch(() => null);
+  // Gewitterpotenzial, Regen, Temperatur und Tageslicht: ohne diese Daten läuft die Seite weiter, nur ohne Gewitterwarnung, Temperatur und Outfit
+  const wx = getJson(`${API}?${common}&hourly=cape,weather_code,precipitation,temperature_2m,apparent_temperature&daily=sunrise,sunset`).catch(() => null);
   const p = Promise.all([wind, wx]).then(([w, x]) => build(spot, w, x));
   p.catch(() => cache.delete(spot.id));
   cache.set(spot.id, p);
@@ -429,7 +467,8 @@ function build(spot, w, x) {
     }
     const hr = { i, t: ts, date: ts.slice(0, 10), h: +ts.slice(11, 13), per, c: consensus(per) };
     if (x && x.hourly && x.hourly.time.length === time.length) {
-      hr.wx = { cape: x.hourly.cape[i] ?? 0, code: x.hourly.weather_code[i] ?? 0, rain: x.hourly.precipitation[i] ?? 0 };
+      hr.wx = { cape: x.hourly.cape[i] ?? 0, code: x.hourly.weather_code[i] ?? 0, rain: x.hourly.precipitation[i] ?? 0,
+                temp: x.hourly.temperature_2m?.[i] ?? null, feel: x.hourly.apparent_temperature?.[i] ?? null };
     }
     return hr;
   });
@@ -443,6 +482,7 @@ function build(spot, w, x) {
     // Start frühestens eine Stunde nach Sonnenaufgang, Ende vor Sonnenuntergang (ohne Sonnendaten: 9 bis 18 Uhr)
     day.from = Math.max(CFG.H0, rise ? +rise.slice(11, 13) + 1 : CFG.H0);
     day.until = Math.min(CFG.H1 + 1, set ? +set.slice(11, 13) : 18);
+    day.temp = tempSpan(day.hours.filter(h => h.h >= day.from && h.h + 1 <= day.until));
     day.ev = evaluate(spot, day, now);
     return day;
   });
@@ -463,6 +503,27 @@ function consensus(per) {
     spread: Math.max(...speeds) - Math.min(...speeds),
     hires: hi.length > 0
   };
+}
+
+// Tiefste und höchste Lufttemperatur der Stunden (null ohne Temperaturdaten)
+function tempSpan(hrs) {
+  const t = hrs.map(x => x.wx?.temp).filter(v => v != null);
+  return t.length ? { min: Math.min(...t), max: Math.max(...t) } : null;
+}
+const tempLabel = t => {
+  const a = Math.round(t.min), b = Math.round(t.max);
+  // "bis" bei Minusgraden, sonst stünde "-2-5 °C"; geschütztes Leerzeichen, damit "°C" nie allein auf einer Zeile steht
+  return a === b ? `${a} °C` : a < 0 ? `${a} bis ${b} °C` : `${a}-${b} °C`;
+};
+
+// Outfit für die Stunden eines Fensters: nach der kältesten gefühlten Temperatur, bei Regen wasserdicht
+function outfit(hrs) {
+  const feel = hrs.map(x => x.wx?.feel).filter(v => v != null);
+  if (!feel.length) return null;
+  const min = Math.round(Math.min(...feel));   // gerundet wie angezeigt, damit Stufe und Zahl zusammenpassen
+  const [, emoji, text] = OUTFIT.find(o => min < o[0]);
+  const rain = hrs.some(x => x.wx && x.wx.rain >= CFG.RAIN);
+  return { emoji, text: text + (rain ? ', Regenzeug' : ''), rain, feel: min, temp: tempSpan(hrs) };
 }
 
 function longestRun(arr, pred) {
@@ -507,7 +568,7 @@ function evaluate(spot, day, now) {
     ev.rating = !long ? 'maybe' : ideal ? 'top' : 'ok';
     ev.main = ev.short = `${win.start}-${win.end + 1} Uhr`;
     ev.sub = `Ø ${kn(ev.mean)} kn · Böen ${kn(ev.gust)} kn · ${dirName(ev.dir)}`;
-    ev.tip = ev.rating === 'top' ? 'Gleichmässiger, mässiger Wind: ideal, um Stunden zu sammeln.'
+    ev.tip = ev.rating === 'top' ? 'Gleichmässiger, mässiger Wind.'
       : !long ? `Nur ${win.items.length} Stunden am Stück passend.`
       : gusty ? `Böig (Böen bis ${kn(ev.gust)} kn): der Wind schwankt, lieber vorsichtig segeln.`
       : ev.mean < CFG.IDEAL_MIN ? 'Leichtwind: gut zum Trimmen üben, Motor bereit halten.'
@@ -666,6 +727,9 @@ function renderFazit() {
   }
   const lead0 = days.find(d => d.ev.rating !== 'over');
   const headState = best ? best.ev.rating : lead0 ? lead0.ev.rating : 'no';
+  // Outfit nur für das Fenster der grossen Antwort
+  const fit = best ? outfit(best.ev.win.items) : null;
+  const fitLine = fit ? `<p class="hero-fit">${emo(fit.emoji)}<span><strong>Anziehen:</strong> ${esc(fit.text)} <span class="muted">(${tempLabel(fit.temp ?? { min: fit.feel, max: fit.feel })}, gefühlt ${fit.feel} °C${fit.rain ? ', Regen möglich' : ''})</span></span></p>` : '';
 
   const rough = days.filter(d => d.ev.storm || (d.ev.maxGust ?? 0) >= CFG.STRONG_WARN);
   const hint = rough.length
@@ -676,6 +740,7 @@ function renderFazit() {
       <span class="day-name">${esc(d.name)}<small>${esc(d.sub)}</small></span>
       <span class="day-state">${emo(STATE[d.ev.rating].emoji)}${STATE[d.ev.rating].label}</span>
       <span class="day-main">${d.ev.short ?? '-'}</span>
+      ${d.temp ? `<span class="day-temp">${emo('🌡️')}${tempLabel(d.temp)}</span>` : ''}
       <span class="day-sub">${d.ev.sub ?? 'Kein bewertbarer Zeitraum mehr'}</span>
       ${hoursBar(d, now)}
     </button>`).join('');
@@ -701,6 +766,7 @@ function renderFazit() {
         <p class="headline">${esc(head)}</p>
         ${sub ? `<p class="hero-sub">${esc(sub)}</p>` : ''}
         <p class="lead">${esc(lead)}</p>
+        ${fitLine}
       </div>
     </div>
     ${hint}
@@ -727,6 +793,7 @@ function renderFazit() {
           <li>Ohne Fenster nennt der Zustand den Grund: „Flaute“ (unter ${CFG.MIN} kn), „Zu viel Wind“ (Ø über ${CFG.MAX} kn oder Böen über ${CFG.GUST_MAX} kn), „Gewitter“ oder „Besser nicht“.</li>
           <li>Die Zustände: ${Object.values(STATE).map(s => emo(s.emoji) + s.label).join(' · ')}.</li>
           <li>Der Balken in jeder Tageskachel zeigt ${CFG.H0} bis ${CFG.H1} Uhr Stunde für Stunde, mit denselben Grenzen. Eine Stunde ist „ideal“, wenn sie für sich allein die Werte von „Ideal zum Üben“ erfüllt. Ob daraus ein Fenster wird, entscheidet die Zahl der Stunden am Stück.</li>
+          <li>${emo('🌡️')}in den Kacheln: tiefste und höchste Lufttemperatur des Tages bei Tageslicht. „Anziehen“ in der Antwort oben richtet sich nach der gefühlten Temperatur (mit Wind) der kältesten Stunde im Fenster, bei Regen ab ${CFG.RAIN} mm pro Stunde kommt wasserdichte Kleidung dazu. Die Stufen sind eine Annahme, bei Bedarf in <code>OUTFIT</code> anpassen. Die Werte gelten an Land beim Gäsi, auf dem Wasser ist es meist kühler.</li>
           <li>Die Grenzen sind bewusst tief gewählt (Einsteiger, Esse 750 mit viel Segel) und eine Annahme, bei Bedarf in <code>CFG</code> anpassen. Das ist eine Faustregel auf Modelldaten, keine Live-Messung. Am Seeende bei Weesen und zwischen den Bergflanken kann der Wind deutlich vom Modell abweichen.</li>
         </ul>
       </details>
@@ -877,6 +944,34 @@ function drawChart() {
   hit.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') hide(); });
   hit.addEventListener('pointercancel', hide);
 }
+
+/* ---------- Grosse Anzeige ---------- */
+// Für schlechtere Augen: ?gross in der Adresse schaltet sie auf diesem Gerät dauerhaft ein, ?normal wieder aus.
+// Ohne eigene Wahl schaltet sie sich auf dem iPhone selbst ein, wenn in iOS eine grosse Textgrösse eingestellt ist.
+const BIG_KEY = 'segel-check-gross';
+function wantsBig() {
+  const q = new URLSearchParams(location.search);
+  try {
+    if (q.has('gross')) localStorage.setItem(BIG_KEY, '1');
+    if (q.has('normal')) localStorage.setItem(BIG_KEY, '0');
+    const saved = localStorage.getItem(BIG_KEY);
+    if (saved) return saved === '1';
+  } catch (e) {
+    if (q.has('gross') || q.has('normal')) return q.has('gross');   // ohne Speicher gilt die Adresse nur für diesen Aufruf
+  }
+  return iosTextSize() >= 21;   // iOS-Standard ist 17 px, 21 px sind zwei Stufen grösser
+}
+// Schriftgrösse, die iOS für Fliesstext vorgibt (Textgrösse in den Einstellungen); 0 ausserhalb von iOS
+function iosTextSize() {
+  if (!/iP(hone|od)/.test(navigator.userAgent) || !(window.CSS && CSS.supports('font', '-apple-system-body'))) return 0;
+  const s = document.createElement('span');
+  s.style.font = '-apple-system-body';
+  document.body.appendChild(s);
+  const px = parseFloat(getComputedStyle(s).fontSize) || 0;
+  s.remove();
+  return px;
+}
+document.documentElement.classList.toggle('gross', wantsBig());
 
 /* ---------- Events ---------- */
 document.addEventListener('click', e => {
