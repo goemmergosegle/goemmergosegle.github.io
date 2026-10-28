@@ -266,7 +266,9 @@ html.gross{font-size:20px;--muted:#4b5963}
 .gross .hours,.gross .hours-ax{flex:1 0 100%}
 .gross .hours i{height:16px}
 .gross .axis text{font-size:14px}
-.gross .spot-info{display:none}   /* Fakten zu Gäsi, Walensee und Boot samt "Vor dem Ablegen" und "So wird bewertet" */
+/* Von der Karte zu Gäsi, Walensee und Boot bleibt nur die Checkliste "Vor dem Ablegen" */
+.gross .spot-head,.gross .spot-info .facts,.gross .spot-info .rules{display:none}
+.gross .spot-info .checklist{margin-top:0}
 </style>
 </head>
 <body>
@@ -779,9 +781,9 @@ function renderFazit() {
     <p class="hours-legend" aria-hidden="true">${legend}</p>
     ${detail}
     <div class="card spot-info">
-      <strong>${esc(spot.overview)}</strong>
+      <strong class="spot-head">${esc(spot.overview)}</strong>
       <ul class="facts" style="margin-top:10px">${spot.facts.map(f => `<li>${f}</li>`).join('')}</ul>
-      <details><summary>Vor dem Ablegen</summary>
+      <details class="checklist"><summary>Vor dem Ablegen</summary>
         <ul>
           <li>Warnkarte der MeteoSchweiz für Seen und Gewitter ansehen, dazu eine Webcam: Kräuselung und Schaumkronen zeigen den Wind.</li>
           <li>Rettungswesten an, Handy wasserdicht, Motor hat noch Benzin. Das Wasser bleibt auch im Sommer kalt.</li>
@@ -790,7 +792,7 @@ function renderFazit() {
           <li>Bei Gewitter in der Nähe, dunkler Wolkenwand oder plötzlich auffrischendem Wind sofort zum nächsten Hafen.</li>
         </ul>
       </details>
-      <details><summary>So wird bewertet</summary>
+      <details class="rules"><summary>So wird bewertet</summary>
         <ul>
           <li>Konsens aus den hochauflösenden Modellen ICON-CH1, ICON-CH2 und ICON-D2 (Median); ECMWF und GFS zeigen nur die Streuung.</li>
           <li>Eine Stunde zählt, wenn Ø-Wind ${CFG.MIN}-${CFG.MAX} kn, Böen höchstens ${CFG.GUST_MAX} kn, kein Gewitterrisiko (CAPE ab ${CFG.CAPE} J/kg oder Gewitter-Wettercode) und Tageslicht ist: Start frühestens eine Stunde nach Sonnenaufgang, Ende vor Sonnenuntergang, höchstens ${CFG.H0}-${CFG.H1 + 1} Uhr.</li>
