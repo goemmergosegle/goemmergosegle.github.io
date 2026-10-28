@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#263238" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1114" media="(prefers-color-scheme: dark)">
+<title>Segel Check</title>
+<meta name="description" content="Segel-Vorhersage für den Walensee ab Gäsi: Wind für Einsteiger auf der Esse 750, Modellvergleich, Gewitterrisiko, Webcams und Windy-Overlay.">
+<style>
+/* Flat/Material-Look (ca. 2014-2019, übernommen von kite-page.html): dunkle Navbar, Karten mit leichtem Schatten, 4px-Radius, System-Sans */
+:root{
+  color-scheme: light dark;
+  --page:#eef1f4; --surface:#ffffff; --surface-2:#f6f8fa; --ink:#212b33; --muted:#5f6c76;
+  --line:#dfe4e8; --line-2:#c9d1d7;
+  --accent:#1976d2; --accent-ink:#ffffff; --link:#1565c0;
+  --nav:#263238; --nav-ink:#ffffff; --nav-muted:rgba(255,255,255,.72); --nav-accent:#64b5f6;
+  --go:#2e7d32;
+  --go-fill:#2e7d32;    --go-ink:#ffffff;
+  --ok-fill:#eaf5e4;    --ok-ink:#23500f;    --ok-line:#7cb342;
+  --calm-fill:#0277bd;  --calm-ink:#ffffff;
+  --storm-fill:#6a1b9a; --storm-ink:#ffffff;
+  --maybe-fill:#ffb300; --maybe-ink:#212121;
+  --no-fill:#c62828;    --no-ink:#ffffff;
+  --over-fill:#546e7a;  --over-ink:#ffffff;
+  --warn-bg:#fff8e1; --warn-bd:#ffe082; --warn-ink:#4e342e;
+  --band:rgba(46,125,50,.09); --band-fun:rgba(46,125,50,.22); --band-warn:rgba(198,40,40,.07);
+  --m1:#00897b; --m2:#1e88e5; --m3:#8e24aa; --m4:#fb8c00; --m5:#78909c;
+  --elev1:0 1px 2px rgba(16,24,32,.10),0 1px 3px rgba(16,24,32,.08);
+  --elev2:0 3px 10px rgba(16,24,32,.16);
+  --r:4px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --page:#10161a; --surface:#182026; --surface-2:#131a1f; --ink:#e6ebef; --muted:#9aa7b0;
+    --line:#2b363d; --line-2:#3a4850;
+    --accent:#64b5f6; --accent-ink:#0b1d2c; --link:#90caf9;
+    --nav:#0c1114; --nav-accent:#64b5f6;
+    --go:#81c784;
+    --go-fill:#66bb6a;    --go-ink:#0b2a10;
+    --ok-fill:#1f3a24;    --ok-ink:#c8e6c9;    --ok-line:#66bb6a;
+    --calm-fill:#4fc3f7;  --calm-ink:#02202e;
+    --storm-fill:#ce93d8; --storm-ink:#1f0a26;
+    --maybe-fill:#ffca28; --maybe-ink:#2a2000;
+    --no-fill:#ef5350;    --no-ink:#2a0705;
+    --over-fill:#90a4ae;  --over-ink:#10181c;
+    --warn-bg:#2f2a14; --warn-bd:#5c4b12; --warn-ink:#f3e7c3;
+    --band:rgba(129,199,132,.11); --band-fun:rgba(129,199,132,.26); --band-warn:rgba(239,83,80,.10);
+    --m1:#4db6ac; --m2:#64b5f6; --m3:#ba68c8; --m4:#ffb74d; --m5:#b0bec5;
+    --elev1:0 1px 2px rgba(0,0,0,.4);
+    --elev2:0 3px 10px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box}
+html{font-size:15px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{
+  margin:0; background:var(--page); color:var(--ink);
+  font:1rem/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--link)}
+button{font:inherit;color:inherit;cursor:pointer}
+button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
+
+/* ---- Navbar ---- */
+.top{background:var(--nav);color:var(--nav-ink);position:sticky;top:0;z-index:20;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:10px;padding-bottom:8px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:30px;height:30px;color:var(--nav-accent);flex:none}
+.brand h1{margin:0;font-size:1.2rem;font-weight:500;line-height:1.2;letter-spacing:.01em}
+.brand p{margin:0;font-size:.8rem;color:var(--nav-muted)}
+.anchors{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.12)}
+.anchors::-webkit-scrollbar{display:none}
+.anchors a{flex:none;text-decoration:none;color:var(--nav-muted);font-size:.88rem;padding:8px 14px 6px;border-bottom:2px solid transparent}
+@media (hover:hover){.anchors a:hover{color:#fff;border-bottom-color:var(--nav-accent)}}
+.anchors a:active{color:#fff;border-bottom-color:var(--nav-accent)}
+
+/* ---- Abschnitte ---- */
+main{padding-top:22px;padding-bottom:40px}
+section{margin-bottom:30px;scroll-margin-top:calc(var(--hdr,0px) + 12px)}
+section>h2{
+  font-size:1.1rem;font-weight:500;line-height:1.2;margin:0 0 12px;padding:2px 0 2px 10px;
+  border-left:4px solid var(--accent);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+section>h2 small{font-weight:400;color:var(--muted);font-size:.82rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--elev1);padding:16px}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.state{padding:28px 16px;text-align:center;color:var(--muted)}
+.state button{margin-top:10px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);padding:6px 16px;font-weight:500}
+.state button:active{background:var(--surface-2)}
+@media (hover:hover){.state button:hover{background:var(--surface-2)}}
+.emo{display:inline-block;margin-right:.35em;font-style:normal;font-weight:400;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.badge .emo,.chip .emo{font-size:1.3em;margin-right:.3em;vertical-align:-.12em}
+.headline .emo{margin-right:.4em}
+.state .emo{display:block;margin:0 0 6px;font-size:1.9rem}
+
+/* ---- Fazit ---- */
+.headline{font-size:1.3rem;line-height:1.3;font-weight:500;margin:0 0 4px}
+.lead{margin:0;color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.day{
+  text-align:left;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--line-2);border-radius:var(--r);
+  box-shadow:var(--elev1);padding:12px 14px;display:flex;flex-direction:column;gap:3px;transition:box-shadow .15s;
+}
+@media (hover:hover){.day:not([aria-pressed="true"]):hover{box-shadow:var(--elev2)}}
+.day:active{background:var(--surface-2)}
+.day:has(.badge.top){border-top-color:var(--go-fill)}
+.day:has(.badge.ok){border-top-color:var(--ok-line)}
+.day:has(.badge.maybe){border-top-color:var(--maybe-fill)}
+.day:has(.badge.calm){border-top-color:var(--calm-fill)}
+.day:has(.badge.strong),.day:has(.badge.no){border-top-color:var(--no-fill)}
+.day:has(.badge.storm){border-top-color:var(--storm-fill)}
+.day:has(.badge.over){border-top-color:var(--over-fill)}
+.day[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent),var(--elev2)}
+.day-name{font-weight:500}
+.day-name small{font-weight:400;color:var(--muted);margin-left:5px}
+.badge,.chip{display:inline-block;font-size:.75rem;font-weight:700;line-height:1.5;padding:1px 8px;border-radius:3px;letter-spacing:.02em;white-space:nowrap}
+.badge{align-self:flex-start;margin:4px 0 2px}
+.badge.top{background:var(--go-fill);color:var(--go-ink)}
+.badge.ok{background:var(--ok-fill);color:var(--ok-ink);box-shadow:inset 0 0 0 1px var(--ok-line)}
+.badge.maybe{background:var(--maybe-fill);color:var(--maybe-ink)}
+.badge.calm{background:var(--calm-fill);color:var(--calm-ink)}
+.badge.strong,.badge.no{background:var(--no-fill);color:var(--no-ink)}
+.badge.storm{background:var(--storm-fill);color:var(--storm-ink)}
+.badge.over{background:var(--over-fill);color:var(--over-ink)}
+.day-main{font-size:1.15rem;font-weight:500}
+.day-sub{font-size:.86rem;color:var(--muted)}
+.day-agree{font-size:.8rem;color:var(--muted);margin-top:2px}
+.note{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-bd);border-left:4px solid var(--maybe-fill);border-radius:var(--r);padding:10px 14px;margin:0 0 12px;font-size:.92rem}
+.facts{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.facts li{padding-left:18px;position:relative;font-size:.94rem}
+.facts li::before{content:"";position:absolute;left:2px;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.facts .src{font-size:.8rem;margin-left:4px;white-space:nowrap}
+details{margin-top:12px}
+summary{cursor:pointer;color:var(--link);font-size:.88rem}
+details p,details ul{font-size:.9rem;color:var(--muted);margin:8px 0 0}
+code{font:.9em Consolas,Menlo,"Roboto Mono",monospace;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+
+/* ---- Forecast ---- */
+.chart-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{border:1px solid var(--line-2);background:var(--surface);border-radius:16px;padding:3px 12px;font-size:.84rem;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s}
+@media (hover:hover){.pill:hover{background:var(--surface-2)}}
+.pill[aria-pressed="false"]{color:var(--muted);text-decoration:line-through;background:transparent}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.chart{position:relative;touch-action:pan-y}
+.chart svg{display:block;width:100%;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:rgba(33,43,51,.95);color:#fff;border-radius:var(--r);padding:8px 10px;font-size:.8rem;line-height:1.4;box-shadow:var(--elev2);min-width:150px;z-index:5;display:none}
+.tip b{display:block;margin-bottom:2px}
+.tip hr{border-top-color:rgba(255,255,255,.25)!important}
+.tip.strip{min-width:0;padding:6px 10px}
+.tip.strip b{display:inline;margin:0}
+.tip .mvs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin-top:2px;font-size:.78rem}
+.tip .mv{display:inline-flex;align-items:center;gap:5px}
+.tip .u{color:rgba(255,255,255,.65)}
+.tip .row{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.tip .row span:first-child{display:inline-flex;align-items:center;gap:6px}
+.axis text{fill:var(--muted);font-size:11px}
+.legend-note{font-size:.82rem;color:var(--muted);margin:10px 0 0}
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:8px}
+th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:500;border-bottom:2px solid var(--line-2)}
+th:first-child,td:first-child{text-align:left}
+tbody tr:nth-child(even){background:var(--surface-2)}
+.tscroll{overflow-x:auto}
+
+
+/* ---- Karten-Raster ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.src-card h3{margin:0 0 2px;font-size:1rem;font-weight:500}
+.src-card p{margin:0 0 12px;font-size:.88rem;color:var(--muted)}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.btn,.btn:visited{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:.86rem;font-weight:500;padding:5px 14px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--surface);color:var(--ink);transition:background .15s,box-shadow .15s}
+@media (hover:hover){.btn:hover{background:var(--surface-2);box-shadow:var(--elev1)}}
+.btn:active{background:var(--surface-2)}
+.btn.primary,.btn.primary:visited{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+@media (hover:hover){.btn.primary:hover{background:var(--accent);filter:brightness(1.08)}}
+.btn.primary:active{background:var(--accent);filter:brightness(.92)}
+.btn svg{width:13px;height:13px}
+
+/* ---- Overlay ---- */
+.overlay-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.overlay-bar .pill[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.overlay-bar .pill[aria-pressed="false"]{color:var(--ink);text-decoration:none;background:var(--surface)}
+@media (hover:hover){.overlay-bar .pill[aria-pressed="false"]:hover{background:var(--surface-2)}}
+.overlay-bar .sp{flex:1}
+.map-toggle{display:none}
+.frame{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.frame.locked iframe{pointer-events:none}
+.frame iframe{display:block;width:100%;height:min(66vh,520px);min-height:360px;border:0}
+
+.credit{font-size:.82rem;color:var(--muted);margin-top:10px}
+
+/* Touch-Geräte: grosse Tippflächen, Karte per Knopf entsperren (sonst fängt sie das Scrollen ab) */
+@media (pointer:coarse){
+  .btn,.state button{min-height:44px}
+  .pill{min-height:40px;padding:6px 14px}
+  .anchors a{padding:13px 14px 11px}
+  summary{padding:11px 0}
+  .map-toggle{display:inline-flex}
+}
+
+/* Querformat-Handy: Header nicht mitlaufen lassen */
+@media (max-height:520px){.top{position:static}}
+
+@media (max-width:720px){
+  html{font-size:16px}
+  .card{padding:14px}
+  section{margin-bottom:24px}
+  main{padding-top:16px}
+  /* kompakter Header: Marke + Spot-Umschalter in einer Zeile, bleibt oben haften */
+  .top-in{flex-wrap:wrap;gap:8px;padding-top:6px;padding-bottom:6px}
+  .brand{gap:8px}
+  .brand svg{width:26px;height:26px}
+  .brand h1{font-size:1.05rem}
+  .anchors a{font-size:.9rem;padding:9px 12px 7px}
+  .days{grid-template-columns:1fr;gap:10px}
+  .day{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 10px}
+  .day-name{flex:1 0 100%}
+  .badge{margin:0}
+  .chart-head{flex-direction:column;align-items:stretch}
+  .frame iframe{height:min(62vh,480px);min-height:320px}
+  .overlay-bar .sp{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <path d="M15 3v19"/><path d="M15 4 26 19H15"/><path d="M15 9 7 19h8"/><path d="M4 23h24l-3 5H7Z"/>
+      </svg>
+      <div><h1>Segel Check</h1><p>Walensee · Gäsi · Esse 750</p></div>
+    </div>
+  </div>
+  <nav class="wrap anchors" aria-label="Abschnitte">
+    <a href="#sec-fazit" data-scroll>Fazit</a>
+    <a href="#sec-webcams" data-scroll>Webcams</a>
+    <a href="#sec-forecast" data-scroll>Forecast</a>
+    <a href="#sec-overlay" data-scroll>Overlay</a>
+    <a href="#sec-quellen" data-scroll>Quellen</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <noscript><div class="card state"><span class="emo" aria-hidden="true">⚠️</span>Diese Seite braucht JavaScript, um die Vorhersage zu laden.</div></noscript>
+
+  <section id="sec-fazit" aria-labelledby="h-fazit">
+    <h2 id="h-fazit">Fazit <small id="fazit-spot"></small></h2>
+    <div id="fazit"><div class="card state"><span class="emo" aria-hidden="true">⏳</span>Lade Vorhersage …</div></div>
+  </section>
+
+  <section id="sec-webcams" aria-labelledby="h-webcams">
+    <h2 id="h-webcams">Webcams <small>öffnen in neuem Tab</small></h2>
+    <div id="webcams" class="grid"></div>
+  </section>
+
+  <section id="sec-forecast" aria-labelledby="h-forecast">
+    <h2 id="h-forecast">Forecast <small>Modellvergleich, Wind in Knoten</small></h2>
+    <div id="forecast"><div class="card state"><span class="emo" aria-hidden="true">⏳</span>Lade Vorhersage …</div></div>
+  </section>
+
+  <section id="sec-overlay" aria-labelledby="h-overlay">
+    <h2 id="h-overlay">Overlay <small>Windy</small></h2>
+    <div class="card">
+      <div class="overlay-bar" id="overlay-bar"></div>
+      <div class="frame"><iframe id="windy" title="Windy Karte" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+    </div>
+  </section>
+
+  <section id="sec-quellen" aria-labelledby="h-quellen">
+    <h2 id="h-quellen">Quellen <small>direkt zum Spot</small></h2>
+    <div id="quellen" class="grid"></div>
+    <p class="credit">Vorhersagedaten: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0) mit MeteoSwiss ICON-CH1/CH2, DWD ICON-D2, ECMWF IFS und NOAA GFS. Die Bewertung ist eine Faustregel für Einsteiger und ersetzt weder die Warnungen der MeteoSchweiz noch die Beurteilung vor Ort.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- Konfiguration (hier anpassen) ---------- */
+// Werte für Einsteiger auf der Esse 750 (viel Segel, wenig Gewicht). Annahmen von Claude, Stand 2026-10-28.
+const CFG = {
+  MIN: 3,          // kn, darunter Flaute (Dümpeln, nur mit Motor)
+  IDEAL_MIN: 6,    // kn, ab hier gut zum Üben
+  IDEAL_MAX: 10,   // kn, darüber wird es für Einsteiger frisch
+  MAX: 12,         // kn, darüber zu viel für Einsteiger
+  GUST_IDEAL: 15,  // kn, Böen für "Ideal zum Üben"
+  GUST_MAX: 18,    // kn, Böen darüber = kein Fenster
+  GUSTY: 7,        // kn, mittlerer Böenaufschlag, darüber "böig"
+  CAPE: 800,       // J/kg, ab hier Gewitterrisiko (oder Wettercode 95 und höher)
+  STRONG_WARN: 25, // kn, Böen ab hier: Niveau der Starkwindwarnung der MeteoSchweiz
+  GO_HOURS: 3,     // Stunden am Stück für "Ideal zum Üben" und "Segelbar"
+  H0: 9, H1: 19    // frühester Start / spätestes Ende (zusätzlich begrenzt durch das Tageslicht)
+};
+
+const MODELS = [
+  { id:'meteoswiss_icon_ch1', label:'ICON-CH1', res:'1 km',  hires:true,  css:'--m1' },
+  { id:'meteoswiss_icon_ch2', label:'ICON-CH2', res:'2 km',  hires:true,  css:'--m2' },
+  { id:'icon_d2',             label:'ICON-D2',  res:'2 km',  hires:true,  css:'--m3' },
+  { id:'ecmwf_ifs025',        label:'ECMWF IFS',res:'25 km', hires:false, css:'--m4' },
+  { id:'gfs_seamless',        label:'GFS',      res:'grob',  hires:false, css:'--m5' }
+];
+
+const EXT = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3 7 9"/></svg>';
+
+const WIND_RULE = `Einsteiger-Werte: ideal sind Ø ${CFG.IDEAL_MIN}-${CFG.IDEAL_MAX} kn bei Böen bis ${CFG.GUST_IDEAL} kn, segelbar ist ${CFG.MIN}-${CFG.MAX} kn, Böen höchstens ${CFG.GUST_MAX} kn.`;
+const WARN_URL = 'https://www.meteoschweiz.admin.ch/wetter/gefahren/warnkarte.html';
+
+const SPOTS = {
+  gaesi: {
+    id:'gaesi', name:'Gäsi', water:'Walensee',
+    lat:47.1284, lon:9.108, zoom:11,       // Hafen Gäsi
+    center:[47.125, 9.2],                  // Kartenmitte (Seemitte), damit der ganze See sichtbar ist
+    overview:'Gäsi, Walensee und Esse 750',
+    facts:[
+      'Hafen Gäsi am westlichen Ende des Walensees bei Weesen (ca. 47.128° N, 9.108° E). Hier ist laut Verzeichniseintrag auch der Segel- und Motorboot-Club Glarnerland und Walensee (SMCGW) zu Hause. <a class="src" href="https://www.smcgw.ch" target="_blank" rel="noopener">smcgw.ch</a>',
+      'Der Walensee ist rund 15 km lang und schmal, mit steilen Bergflanken auf beiden Seiten (Churfirsten im Norden, Flumserberg und Kerenzerberg im Süden). Solche Flanken können den Wind lenken und böig machen (Faustregel).',
+      'Im Schnitt weht es am See eher schwach: Windfinder nennt für Mühlehorn in der Seemitte im Jahresmittel Ø 3 kn, meist aus West. Flaute ist darum häufig, und die Grenzen unten sind so gewählt, dass auch leichter Wind noch zählt. <a class="src" href="https://www.windfinder.com/windstatistics/walensee_muehlehorn" target="_blank" rel="noopener">Windfinder-Statistik</a>',
+      'Auf den Alpenseen gelten Föhn und Wärmegewitter als die grössten Gefahren: Der Wind kann plötzlich auffrischen, dazu kommt eine kurze, steile Welle, und bei Wärmegewittern bleibt oft wenig Vorwarnzeit. Bei Gewitter in der Nähe oder aufziehender Wolkenwand sofort in den Hafen. <a class="src" href="https://www.yacht.de/segelwissen/wetterkunde/extremwetter-achtung-gewitter-der-sturmwarndienst-auf-den-alpenseen/" target="_blank" rel="noopener">YACHT</a>',
+      'Die MeteoSchweiz warnt auf den Seen in zwei Stufen: Starkwindwarnung bei erwarteten Böen von 25 bis 33 kn, Sturmwarnung bei Böen über 33 kn. Die Kantonspolizei schaltet orange Warnleuchten am Ufer. Ob am Walensee solche Leuchten stehen, ist hier nicht geprüft; die Warnkarte für Seen zeigt die aktuelle Lage. <a class="src" href="' + WARN_URL + '" target="_blank" rel="noopener">MeteoSchweiz Warnkarte</a>',
+      'Esse 750: 7,50 m lang, 2,05 m breit, Tiefgang 1,70 m, ca. 960-980 kg mit ca. 560-580 kg Ballast in der Kielbombe. Gross 23 m² (Volllatten), selbstwendende Fock 12 m² mit Rollreff, Gennaker 60-65 m², Carbonmast. Die Angaben stammen aus Inseraten, nicht vom Hersteller; ob der Kiel einen Hubmechanismus hat, sagen sie widersprüchlich. <a class="src" href="https://www.boat24.com/en/sailingboats/esse/esse-750/detail/710371/" target="_blank" rel="noopener">Inserat (boat24)</a>',
+      'Viel Segelfläche für wenig Gewicht (ca. 35 m² am Wind auf rund einer Tonne): Die Esse 750 ist ein sportlicher Daysailer, sie zieht früh an und legt sich schnell. Darum liegen die Grenzen hier tiefer als bei einem gemütlichen Fahrtenboot. Die Inserate nennen nur ein Rollreff an der Fock; ob das Gross ein Reff hat, vor Ort klären.',
+      WIND_RULE
+    ],
+    webcams:[
+      { name:'Weesen und Betlis (Amden-Weesen)', desc:'Livecam-Seite mit Weesen Hafen (Blick über den See) und Betlis (Blick über den Walensee). Zeigt Kräuselung und Schaumkronen.', url:'https://amden-weesen.ch/en/plan-your-trip/webcams' },
+      { name:'Windfinder Webcams Weesen', desc:'Webcamliste rund um Weesen und das Gäsi.', url:'https://www.windfinder.com/webcams/weesen' },
+      { name:'Windfinder Webcams Walenstadt', desc:'Am östlichen Ende des Sees: zeigt, was von Osten heranzieht.', url:'https://www.windfinder.com/webcams/walensee_walenstadt' }
+    ],
+    sources:[
+      { name:'MeteoSchweiz Warnkarte', desc:'Warnungen für Seen (Starkwind, Sturm), Gewitter und Wind. Vor jedem Auslaufen ansehen.',
+        links:[{l:'Warnkarte', u:WARN_URL, p:1},{l:'Sturmwarndienst erklärt', u:'https://www.meteoschweiz.admin.ch/ueber-uns/meteoschweiz-blog/de/2025/06/der-sturmwarndienst-auf-schweizer-seen.html'}] },
+      { name:'Windguru', desc:'Mehrere Modelle nebeneinander (GFS, ICON, IFS).',
+        links:[{l:'Walensee', u:'https://www.windguru.cz/37709', p:1}] },
+      { name:'Windfinder', desc:'Stündliche Vorhersage für Weesen (Seeende beim Gäsi) und Mühlehorn (Seemitte).',
+        links:[{l:'Weesen', u:'https://www.windfinder.com/forecast/weesen', p:1},{l:'Mühlehorn', u:'https://www.windfinder.com/forecast/walensee_muehlehorn'}] },
+      { name:'Superforecast', desc:'Windfinders hochauflösende Zusatzprognose, mehrmals täglich aktualisiert.',
+        links:[{l:'Weesen', u:'https://www.windfinder.com/weatherforecast/weesen', p:1}] },
+      { name:'iWind', desc:'Live-Windstationen in Echtzeit plus ICON-CH1-Alpenprognose (1 km).',
+        links:[{l:'Wetterübersicht', u:'https://www.iwind.at/weather-overview', p:1}] },
+      { name:'Windy.app', desc:'Spotvorhersage für den Walensee bei Mühlehorn.',
+        links:[{l:'Mühlehorn', u:'https://windy.app/forecast2/spot/81063/Walensee', p:1}] }
+    ]
+  }
+};
+
+const OVERLAYS = [['wind','Wind'],['gust','Böen'],['clouds','Wolken'],['rain','Regen'],['temp','Temperatur'],['pressure','Druck']];
+const DIRS = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+
+/* ---------- Helfer ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const emo = e => `<span class="emo" aria-hidden="true">${e}</span>`;
+const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+const median = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const rad = d => d * Math.PI / 180;
+const dirName = d => DIRS[Math.round((((d % 360) + 360) % 360) / 22.5) % 16];
+const pad2 = n => String(n).padStart(2, '0');
+const kn = v => Math.round(v);
+const isStorm = x => !!x.wx && (x.wx.code >= 95 || x.wx.cape >= CFG.CAPE);
+
+function vecMean(items) {
+  let sx = 0, sy = 0;
+  for (const it of items) { const w = Math.max(it.spd, 0.5); sx += w * Math.sin(rad(it.dir)); sy += w * Math.cos(rad(it.dir)); }
+  return (Math.atan2(sx, sy) * 180 / Math.PI + 360) % 360;
+}
+
+function zurichNow() {
+  const s = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Zurich', hourCycle: 'h23' }); // "2026-10-07 14:03:22"
+  return { key: s.slice(0, 10) + 'T' + s.slice(11, 13), date: s.slice(0, 10), h: +s.slice(11, 13), m: +s.slice(14, 16) };
+}
+
+function dayLabels(date, idx) {
+  const d = new Date(date + 'T12:00:00');
+  const named = idx < 2;
+  const sub = d.toLocaleDateString('de-CH', named ? { weekday: 'short', day: 'numeric', month: 'numeric' } : { day: 'numeric', month: 'numeric' });
+  return { name: ['Heute', 'Morgen'][idx] || d.toLocaleDateString('de-CH', { weekday: 'long' }), sub };
+}
+
+/* ---------- Daten ---------- */
+const API = 'https://api.open-meteo.com/v1/forecast';
+const cache = new Map();
+
+async function getJson(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+function loadSpot(spot) {
+  if (cache.has(spot.id)) return cache.get(spot.id);
+  const common = `latitude=${spot.lat}&longitude=${spot.lon}&wind_speed_unit=kn&timezone=Europe%2FZurich&forecast_days=3`;
+  const wind = getJson(`${API}?${common}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&models=${MODELS.map(m => m.id).join(',')}`);
+  // Gewitterpotenzial, Regen und Tageslicht: ohne diese Daten läuft die Seite weiter, nur ohne Gewitterwarnung
+  const wx = getJson(`${API}?${common}&hourly=cape,weather_code,precipitation&daily=sunrise,sunset`).catch(() => null);
+  const p = Promise.all([wind, wx]).then(([w, x]) => build(spot, w, x));
+  p.catch(() => cache.delete(spot.id));
+  cache.set(spot.id, p);
+  return p;
+}
+
+function build(spot, w, x) {
+  const time = w.hourly.time;
+  const hours = time.map((ts, i) => {
+    const per = {};
+    for (const m of MODELS) {
+      const spd = w.hourly['wind_speed_10m_' + m.id]?.[i];
+      if (spd == null) continue;
+      const gust = w.hourly['wind_gusts_10m_' + m.id]?.[i];
+      const dir = w.hourly['wind_direction_10m_' + m.id]?.[i];
+      per[m.id] = { spd, gust: gust ?? spd * 1.3, dir: dir ?? 0 };
+    }
+    const hr = { i, t: ts, date: ts.slice(0, 10), h: +ts.slice(11, 13), per, c: consensus(per) };
+    if (x && x.hourly && x.hourly.time.length === time.length) {
+      hr.wx = { cape: x.hourly.cape[i] ?? 0, code: x.hourly.weather_code[i] ?? 0, rain: x.hourly.precipitation[i] ?? 0 };
+    }
+    return hr;
+  });
+  const now = zurichNow();
+  const dates = [...new Set(hours.map(h => h.date))];
+  const days = dates.map((date, idx) => {
+    const day = { date, idx, isToday: date === now.date, hours: hours.filter(h => h.date === date), ...dayLabels(date, idx) };
+    const di = x?.daily?.time?.indexOf(date) ?? -1;
+    const rise = di >= 0 ? x.daily.sunrise[di] : null, set = di >= 0 ? x.daily.sunset[di] : null;
+    day.sun = { rise: rise ? rise.slice(11, 16) : null, set: set ? set.slice(11, 16) : null };
+    // Start frühestens eine Stunde nach Sonnenaufgang, Ende vor Sonnenuntergang (ohne Sonnendaten: 9 bis 18 Uhr)
+    day.from = Math.max(CFG.H0, rise ? +rise.slice(11, 13) + 1 : CFG.H0);
+    day.until = Math.min(CFG.H1 + 1, set ? +set.slice(11, 13) : 18);
+    day.ev = evaluate(spot, day, now);
+    return day;
+  });
+  return { spot, days, now, models: MODELS.filter(m => hours.some(h => h.per[m.id])) };
+}
+
+// Konsens: bevorzugt die hochauflösenden Modelle (CH1/CH2/D2), sonst alle verfügbaren.
+function consensus(per) {
+  const all = MODELS.map(m => per[m.id]).filter(Boolean);
+  if (!all.length) return null;
+  const hi = MODELS.filter(m => m.hires).map(m => per[m.id]).filter(Boolean);
+  const set = hi.length ? hi : all;
+  const speeds = all.map(x => x.spd);
+  return {
+    spd: median(set.map(x => x.spd)),
+    gust: median(set.map(x => x.gust)),
+    dir: vecMean(set),
+    spread: Math.max(...speeds) - Math.min(...speeds),
+    hires: hi.length > 0
+  };
+}
+
+function longestRun(arr, pred) {
+  let best = null, cur = null;
+  for (const x of arr) {
+    if (pred(x)) {
+      if (cur && x.h === cur.end + 1) { cur.end = x.h; cur.items.push(x); } else cur = { start: x.h, end: x.h, items: [x] };
+      if (!best || cur.items.length > best.items.length) best = cur;
+    } else cur = null;
+  }
+  return best;
+}
+
+// Einigkeit der Modelle nach Spannweite der Windgeschwindigkeit (kn): [obere Grenze, Emoji, Text]
+const AGREE = [[4, '🤝', 'Modelle einig'], [8, '↔️', 'Modelle weichen leicht ab'], [Infinity, '⚠️', 'Modelle uneinig']];
+
+function evaluate(spot, day, now) {
+  const hrs = day.hours.filter(x => x.c && x.h >= day.from && x.h + 1 <= day.until && (!day.isToday || x.t.slice(0, 13) >= now.key));
+  if (!hrs.length) return { rating: 'over' };
+  for (const x of hrs) {
+    x.windOk = x.c.spd >= CFG.MIN && x.c.spd <= CFG.MAX && x.c.gust <= CFG.GUST_MAX;
+    x.storm = isStorm(x);
+  }
+  const win = longestRun(hrs, x => x.windOk && !x.storm);
+  const windOnly = longestRun(hrs, x => x.windOk);
+  const stormHrs = hrs.filter(x => x.storm);
+  const maxSpd = Math.max(...hrs.map(x => x.c.spd));
+  const maxGust = Math.max(...hrs.map(x => x.c.gust));
+  const spread = mean(hrs.map(x => x.c.spread));
+  const [, agreeEmoji, agree] = AGREE.find(a => spread <= a[0]);
+  const ev = { maxSpd, maxGust, spread, agree, agreeEmoji };
+  if (stormHrs.length) ev.storm = { from: stormHrs[0].h, to: stormHrs[stormHrs.length - 1].h + 1 };
+
+  if (win && win.items.length >= 2) {
+    ev.win = win;
+    ev.mean = mean(win.items.map(x => x.c.spd));
+    ev.gust = Math.max(...win.items.map(x => x.c.gust));
+    ev.dir = vecMean(win.items.map(x => ({ spd: x.c.spd, dir: x.c.dir })));
+    const gusty = mean(win.items.map(x => x.c.gust - x.c.spd)) > CFG.GUSTY;
+    const long = win.items.length >= CFG.GO_HOURS;
+    const ideal = ev.mean >= CFG.IDEAL_MIN && ev.mean <= CFG.IDEAL_MAX && ev.gust <= CFG.GUST_IDEAL && !gusty;
+    ev.rating = !long ? 'maybe' : ideal ? 'top' : 'ok';
+    ev.main = `${win.start}-${win.end + 1} Uhr`;
+    ev.sub = `Ø ${kn(ev.mean)} kn · Böen ${kn(ev.gust)} kn · ${dirName(ev.dir)}`;
+    ev.tip = ev.rating === 'top' ? 'Gleichmässiger, mässiger Wind: ideal, um Stunden zu sammeln.'
+      : !long ? `Nur ${win.items.length} Stunden am Stück passend.`
+      : gusty ? `Böig (Böen bis ${kn(ev.gust)} kn): der Wind schwankt, lieber vorsichtig segeln.`
+      : ev.mean < CFG.IDEAL_MIN ? 'Leichtwind: gut zum Trimmen üben, Motor bereit halten.'
+      : ev.mean > CFG.IDEAL_MAX ? 'Frisch für Einsteiger: vor dem Auslaufen reffen, Rettungswesten an.'
+      : `Böen bis ${kn(ev.gust)} kn: aufmerksam bleiben.`;
+  } else if (windOnly && windOnly.items.length >= 2) {
+    ev.rating = 'storm';
+    ev.main = `Gewitterrisiko ${ev.storm.from}-${ev.storm.to} Uhr`;
+    ev.sub = 'Der Wind würde passen, aber die Modelle zeigen Gewitterpotenzial';
+  } else if (maxSpd < CFG.MIN) {
+    ev.rating = 'calm';
+    ev.main = `max. Ø ${maxSpd.toFixed(1)} kn`;   // eine Nachkommastelle, sonst stünde 2.6 kn als "3 kn" neben "unter 3 kn"
+    ev.sub = `Flaute (unter ${CFG.MIN} kn), höchstens Dümpeln mit Motor`;
+  } else if (maxSpd > CFG.MAX || maxGust > CFG.GUST_MAX) {
+    ev.rating = 'strong';
+    ev.main = `Ø bis ${kn(maxSpd)} kn, Böen ${kn(maxGust)} kn`;
+    ev.sub = `Zu viel Wind für Einsteiger (Ø über ${CFG.MAX} kn oder Böen über ${CFG.GUST_MAX} kn)`;
+  } else {
+    ev.rating = 'no';
+    ev.main = `max. Ø ${kn(maxSpd)} kn`;
+    ev.sub = 'Kein zusammenhängendes Fenster mit passendem Wind';
+  }
+  return ev;
+}
+
+/* ---------- Rendering ---------- */
+const state = { spot: null, day: 0, data: null, off: new Set(), overlay: 'wind', mapActive: false };
+const isCoarse = () => typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches;
+
+function setSpot(id) {
+  state.spot = SPOTS[id];
+  state.day = 0;
+  state.data = null;
+  $('#fazit-spot').textContent = `${state.spot.name} · ${state.spot.water}`;
+  renderStatic();
+  $('#fazit').innerHTML = LOADING;
+  $('#forecast').innerHTML = LOADING;
+  loadSpot(state.spot).then(data => {
+    if (data.spot !== state.spot) return;
+    state.data = data;
+    renderData();
+  }, err => {
+    console.error('Vorhersage laden fehlgeschlagen', err);
+    if (state.spot.id !== id) return;
+    const msg = `<div class="card state">${emo('⚠️')}Die Vorhersage konnte nicht geladen werden (Open-Meteo).<br><button type="button" data-retry>Erneut versuchen</button></div>`;
+    $('#fazit').innerHTML = msg;
+    $('#forecast').innerHTML = msg;
+  });
+}
+
+function renderStatic() {
+  const s = state.spot;
+  $('#webcams').innerHTML = s.webcams.map(c => `
+    <div class="card cam"><h3 style="margin:0 0 2px;font-size:1rem">${esc(c.name)}</h3>
+      <p class="muted small" style="margin:0 0 10px">${esc(c.desc)}</p>
+      <div class="links"><a class="btn primary" href="${c.url}" target="_blank" rel="noopener">Webcam öffnen ${EXT}</a></div></div>`).join('');
+  $('#quellen').innerHTML = s.sources.map(c => `
+    <div class="card src-card"><h3>${c.name}</h3><p>${c.desc}</p>
+      <div class="links">${c.links.map(l => `<a class="btn${l.p ? ' primary' : ''}" href="${l.u}" target="_blank" rel="noopener">${l.l} ${EXT}</a>`).join('')}</div></div>`).join('');
+  $('#overlay-bar').innerHTML = OVERLAYS.map(([k, l]) => `<button type="button" class="pill" data-overlay="${k}" aria-pressed="${k === state.overlay}">${l}</button>`).join('') +
+    `<button type="button" class="pill map-toggle" data-maplock aria-pressed="${state.mapActive}">${mapLockLabel()}</button>` +
+    `<span class="sp"></span><a class="btn" href="https://www.windy.com/?${s.lat},${s.lon},${s.zoom}" target="_blank" rel="noopener">In Windy öffnen ${EXT}</a>`;
+  setOverlay(state.overlay);
+  applyMapLock();
+}
+
+// Auf Touch-Geräten ist die Karte gesperrt, damit sie das Scrollen der Seite nicht abfängt.
+const mapLockLabel = () => state.mapActive ? 'Zurück zum Scrollen' : 'Karte bedienen';
+function applyMapLock() { $('.frame').classList.toggle('locked', isCoarse() && !state.mapActive); }
+
+function setOverlay(k) {
+  state.overlay = k;
+  const s = state.spot;
+  const p = new URLSearchParams({
+    lat: s.center[0], lon: s.center[1], detailLat: s.lat, detailLon: s.lon, width: 650, height: 450, zoom: s.zoom, level: 'surface',
+    overlay: k, product: 'ecmwf', menu: '', message: 'true', marker: 'true', calendar: 'now', pressure: '', type: 'map',
+    location: 'coordinates', detail: '', metricWind: 'kt', metricTemp: '°C', radarRange: '-1'
+  });
+  $('#windy').src = 'https://embed.windy.com/embed2.html?' + p;
+  document.querySelectorAll('[data-overlay]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.overlay === k)));
+}
+
+function renderData() {
+  renderFazit();
+  renderForecast();
+}
+
+function selectDay(i) {
+  state.day = i;
+  renderFazit();
+  renderForecast();
+}
+
+// Bewertungszustände. Fenster = mindestens 2 Stunden am Stück mit passendem Wind, ohne Gewitterrisiko, bei Tageslicht.
+//   top: 3+ Stunden, Ø im Idealbereich, Böen gering, nicht böig   ok: 3+ Stunden, aber leichter, frischer oder böiger
+//   maybe: nur 2 Stunden   calm / strong / storm / no: kein Fenster, der Grund steht im Zustand
+const STATE = {
+  top:    { label: 'Ideal zum Üben', emoji: '😎' },
+  ok:     { label: 'Segelbar',       emoji: '⛵' },
+  maybe:  { label: 'Prüfen',         emoji: '🤔' },
+  calm:   { label: 'Flaute',         emoji: '😴' },
+  strong: { label: 'Zu viel Wind',   emoji: '💨' },
+  storm:  { label: 'Gewitter',       emoji: '⛈️' },
+  no:     { label: 'Besser nicht',   emoji: '🙅' },
+  over:   { label: 'Vorbei',         emoji: '🌙' }
+};
+const LOADING = `<div class="card state">${emo('⏳')}Lade Vorhersage …</div>`;
+
+function renderFazit() {
+  const { spot, days } = state.data;
+  const first = r => days.find(d => d.ev.rating === r);
+  const best = first('top') || first('ok') || first('maybe');
+  let head, lead;
+  if (best && (best.ev.rating === 'top' || best.ev.rating === 'ok')) {
+    head = `Bestes Fenster: ${best.name} ${best.ev.main}`;
+    lead = `${best.ev.sub}. ${best.ev.tip}`;
+  } else if (best) {
+    head = `Knapp: ${best.name} ${best.ev.main}`;
+    lead = `${best.ev.sub}. ${best.ev.tip} Vor Ort prüfen.`;
+  } else {
+    head = 'In den nächsten 3 Tagen kein brauchbares Segelfenster';
+    lead = 'Die Modelle zeigen Flaute, zu viel Wind für Einsteiger oder Gewitterrisiko.';
+  }
+  const lead0 = days.find(d => d.ev.rating !== 'over');
+  const headEmoji = STATE[best ? best.ev.rating : lead0 ? lead0.ev.rating : 'no'].emoji;
+
+  const rough = days.filter(d => d.ev.storm || (d.ev.maxGust ?? 0) >= CFG.STRONG_WARN);
+  const hint = rough.length
+    ? `<p class="note"><strong>Wetter-Achtung ${rough.map(d => esc(d.name)).join(', ')}:</strong> Die Modelle zeigen Gewitterpotenzial oder Böen ab ${CFG.STRONG_WARN} kn (Niveau der Starkwindwarnung). Vor dem Auslaufen die <a href="${WARN_URL}" target="_blank" rel="noopener">MeteoSchweiz-Warnkarte</a> ansehen.</p>`
+    : '';
+
+  const cards = days.map(d => {
+    const storm = d.ev.storm && d.ev.rating !== 'storm' ? `<span class="day-agree">${emo('⛈️')}Gewitterrisiko ${d.ev.storm.from}-${d.ev.storm.to} Uhr</span>` : '';
+    return `<button type="button" class="day" data-day="${d.idx}" aria-pressed="${d.idx === state.day}">
+      <span class="day-name">${esc(d.name)}<small>${esc(d.sub)}</small></span>
+      <span class="badge ${d.ev.rating}">${emo(STATE[d.ev.rating].emoji)}${STATE[d.ev.rating].label}</span>
+      <span class="day-main">${d.ev.main ?? '-'}</span>
+      <span class="day-sub">${d.ev.sub ?? 'Kein bewertbarer Zeitraum mehr'}</span>
+      ${d.ev.agree ? `<span class="day-agree">${emo(d.ev.agreeEmoji)}${d.ev.agree}</span>` : ''}${storm}
+    </button>`;
+  }).join('');
+
+  $('#fazit').innerHTML = `
+    <div class="card" style="margin-bottom:12px">
+      <p class="headline">${emo(headEmoji)}${esc(head)}</p><p class="lead" style="margin:0">${esc(lead)}</p>
+    </div>
+    ${hint}
+    <div class="days">${cards}</div>
+    <div class="card">
+      <strong>${esc(spot.overview)}</strong>
+      <ul class="facts" style="margin-top:10px">${spot.facts.map(f => `<li>${f}</li>`).join('')}</ul>
+      <details><summary>Vor dem Ablegen</summary>
+        <ul>
+          <li>Warnkarte der MeteoSchweiz für Seen und Gewitter ansehen, dazu eine Webcam: Kräuselung und Schaumkronen zeigen den Wind.</li>
+          <li>Rettungswesten an, Handy wasserdicht, Akku des Elektromotors geladen. Das Wasser bleibt auch im Sommer kalt.</li>
+          <li>Reffen vor dem Auslaufen, nicht erst auf dem See. Lieber früh die Fock einrollen.</li>
+          <li>Zurück im Hafen sein, bevor es dunkel wird. Die Seite bewertet nur Stunden bei Tageslicht.</li>
+          <li>Bei Gewitter in der Nähe, dunkler Wolkenwand oder plötzlich auffrischendem Wind sofort zum nächsten Hafen.</li>
+        </ul>
+      </details>
+      <details><summary>So wird bewertet</summary>
+        <ul>
+          <li>Konsens aus den hochauflösenden Modellen ICON-CH1, ICON-CH2 und ICON-D2 (Median); ECMWF und GFS zeigen nur die Streuung.</li>
+          <li>Eine Stunde zählt, wenn Ø-Wind ${CFG.MIN}-${CFG.MAX} kn, Böen höchstens ${CFG.GUST_MAX} kn, kein Gewitterrisiko (CAPE ab ${CFG.CAPE} J/kg oder Gewitter-Wettercode) und Tageslicht ist: Start frühestens eine Stunde nach Sonnenaufgang, Ende vor Sonnenuntergang, höchstens ${CFG.H0}-${CFG.H1 + 1} Uhr.</li>
+          <li>„Ideal zum Üben“: mindestens ${CFG.GO_HOURS} Stunden am Stück, Ø ${CFG.IDEAL_MIN}-${CFG.IDEAL_MAX} kn, Böen höchstens ${CFG.GUST_IDEAL} kn und im Mittel höchstens ${CFG.GUSTY} kn über dem Wind. „Segelbar“: ${CFG.GO_HOURS} Stunden am Stück, aber leichter, frischer oder böiger. „Prüfen“: nur 2 Stunden.</li>
+          <li>Ohne Fenster nennt der Zustand den Grund: „Flaute“ (unter ${CFG.MIN} kn), „Zu viel Wind“ (Ø über ${CFG.MAX} kn oder Böen über ${CFG.GUST_MAX} kn), „Gewitter“ oder „Besser nicht“.</li>
+          <li>Die Zustände: ${Object.values(STATE).map(s => emo(s.emoji) + s.label).join(' · ')}.</li>
+          <li>Die Grenzen sind bewusst tief gewählt (Einsteiger, Esse 750 mit viel Segel) und eine Annahme, bei Bedarf in <code>CFG</code> anpassen. Das ist eine Faustregel auf Modelldaten, keine Live-Messung. Am Seeende bei Weesen und zwischen den Bergflanken kann der Wind deutlich vom Modell abweichen.</li>
+        </ul>
+      </details>
+    </div>`;
+}
+
+/* ---------- Chart ---------- */
+function renderForecast() {
+  const { days, models } = state.data;
+  const day = days[state.day];
+  const pills = models.map(m => `<button type="button" class="pill" data-model="${m.id}" aria-pressed="${!state.off.has(m.id)}"><span class="dot" style="background:var(${m.css})"></span>${m.label} <span class="muted">${m.res}</span></button>`).join('');
+  const tabs = days.map(d => `<button type="button" class="pill" data-day="${d.idx}" aria-pressed="${d.idx === state.day}">${esc(d.name)}</button>`).join('');
+  const sun = day.sun.rise && day.sun.set ? ` Grau hinterlegt ist die Nacht (Sonne ${day.sun.rise}-${day.sun.set}).` : '';
+  $('#forecast').innerHTML = `
+    <div class="card">
+      <div class="chart-head">
+        <div class="pills overlay-bar" style="margin:0" role="group" aria-label="Tag">${tabs}</div>
+        <div class="pills" role="group" aria-label="Modelle">${pills}</div>
+      </div>
+      <div class="chart" id="chart"></div>
+      <p class="legend-note">Dicke Linie = Konsens (CH1/CH2/D2), Fläche = Böen. Kräftiges Grün = ideal zum Üben (${CFG.IDEAL_MIN}-${CFG.IDEAL_MAX} kn), helles Grün = segelbar (${CFG.MIN}-${CFG.MAX} kn), rot getönt = zu viel für Einsteiger (ab ${CFG.MAX} kn), violette Spalte = Gewitterrisiko.${sun} Pfeile zeigen, wohin der Wind weht.</p>
+      <details><summary>Daten als Tabelle</summary><div class="tscroll" id="table"></div></details>
+    </div>`;
+  drawChart();
+  drawTable(day);
+}
+
+function drawTable(day) {
+  const rows = day.hours.filter(x => x.c && x.h >= 6 && x.h <= 22).map(x => {
+    const rain = x.wx && x.wx.rain >= 0.1 ? x.wx.rain.toFixed(1) : '-';
+    return `<tr><td>${pad2(x.h)}:00${isStorm(x) ? ' ⛈️' : ''}</td><td>${kn(x.c.spd)}</td><td>${kn(x.c.gust)}</td><td>${dirName(x.c.dir)} ${Math.round(x.c.dir)}°</td><td>±${kn(x.c.spread / 2)}</td><td>${rain}</td></tr>`;
+  }).join('');
+  $('#table').innerHTML = `<table><thead><tr><th>Zeit</th><th>Ø kn</th><th>Böen kn</th><th>Richtung</th><th>Streuung</th><th>Regen mm</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function drawChart() {
+  const host = $('#chart');
+  if (!host || !state.data) return;
+  const { days, models, now } = state.data;
+  const day = days[state.day];
+  const pts = day.hours.filter(x => x.h >= 6 && x.h <= 22 && x.c);
+  const W = host.clientWidth || 640;
+  const H = Math.max(250, Math.min(360, Math.round(W * 0.5)));
+  const M = { l: 34, r: 12, t: 12, b: 46 };
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  if (!pts.length) { host.innerHTML = `<div class="state">${emo('📭')}Keine Daten für diesen Tag.</div>`; return; }
+
+  const top = Math.max(20, ...pts.flatMap(p => [p.c.gust, ...Object.values(p.per).map(v => v.spd)]));
+  const step = top > 30 ? 10 : 5;
+  const yMax = Math.ceil((top + 1) / step) * step;
+  const x = h => M.l + (h - 6) / 16 * iw;
+  const y = v => M.t + ih - Math.min(v, yMax) / yMax * ih;
+
+  const line = (arr, get) => {
+    let d = '', pen = false;
+    for (const p of arr) { const v = get(p); if (v == null) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${x(p.h).toFixed(1)},${y(v).toFixed(1)}`; pen = true; }
+    return d;
+  };
+
+  let g = '';
+  for (let v = 0; v <= yMax; v += step) g += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${M.l - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  const rect = (a, b, fill) => `<rect x="${M.l}" y="${y(b)}" width="${iw}" height="${y(a) - y(b)}" fill="${fill}"/>`;
+  const bands = rect(CFG.MIN, CFG.IDEAL_MIN, 'var(--band)') + rect(CFG.IDEAL_MIN, CFG.IDEAL_MAX, 'var(--band-fun)') +
+    rect(CFG.IDEAL_MAX, CFG.MAX, 'var(--band)') + rect(CFG.MAX, yMax, 'var(--band-warn)');
+
+  // Nacht grau, Gewitterstunden violett
+  const hf = s => s ? +s.slice(0, 2) + +s.slice(3, 5) / 60 : null;
+  const rise = hf(day.sun.rise), set = hf(day.sun.set);
+  const night = [rise != null && rise > 6 ? [6, rise] : null, set != null && set < 22 ? [set, 22] : null].filter(Boolean)
+    .map(([a, b]) => `<rect x="${x(a)}" y="${M.t}" width="${x(b) - x(a)}" height="${ih}" fill="var(--ink)" opacity=".07"/>`).join('');
+  const storms = pts.filter(isStorm).map(p => `<rect x="${x(p.h) - iw / 32}" y="${M.t}" width="${iw / 16}" height="${ih}" fill="var(--storm-fill)" opacity=".16"/>`).join('');
+
+  const area = pts.map(p => `${x(p.h).toFixed(1)},${y(p.c.gust).toFixed(1)}`).join(' ') + ' ' +
+    [...pts].reverse().map(p => `${x(p.h).toFixed(1)},${y(p.c.spd).toFixed(1)}`).join(' ');
+
+  const everyN = W < 520 ? 3 : 2;
+  let xl = '', arrows = '';
+  for (const p of pts) {
+    if ((p.h - 6) % everyN === 0) xl += `<text x="${x(p.h)}" y="${M.t + ih + 15}" text-anchor="middle">${pad2(p.h)}</text>`;
+    if ((p.h - 6) % (W < 520 ? 2 : 1) === 0) {
+      arrows += `<g transform="translate(${x(p.h)},${M.t + ih + 33}) rotate(${p.c.dir.toFixed(0)})" style="stroke:var(--accent)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M0,-6V6M-3.5,2.5L0,6.5L3.5,2.5"/></g>`;
+    }
+  }
+
+  const lines = models.filter(m => !state.off.has(m.id)).map(m =>
+    `<path d="${line(pts, p => p.per[m.id]?.spd)}" fill="none" style="stroke:var(${m.css})" stroke-width="1.6" stroke-linejoin="round" opacity=".9"/>`).join('');
+
+  let nowLine = '';
+  if (day.isToday) {
+    const nf = now.h + now.m / 60;
+    if (nf >= 6 && nf <= 22) nowLine = `<line x1="${x(nf)}" x2="${x(nf)}" y1="${M.t}" y2="${M.t + ih}" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${x(nf) + 4}" y="${M.t + 11}" style="fill:var(--accent);font-size:11px;font-weight:600">jetzt</text>`;
+  }
+
+  const label = `Windvorhersage ${day.name}: ${day.ev.main ?? 'kein Fenster'}`;
+  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(label)}">
+    <g class="axis">${g}${xl}<text x="${M.l}" y="${M.t - 2}" style="font-size:10px">kn</text></g>
+    ${bands}${night}${storms}
+    <polygon points="${area}" fill="var(--accent)" opacity=".13"/>
+    ${lines}
+    <path d="${line(pts, p => p.c.spd)}" fill="none" stroke="var(--ink)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+    ${nowLine}
+    ${arrows}
+    <line id="cursor" y1="${M.t}" y2="${M.t + ih}" stroke="var(--muted)" stroke-width="1" style="display:none"/>
+    <rect id="hit" x="${M.l}" y="${M.t}" width="${iw}" height="${ih + 40}" fill="transparent"/>
+  </svg><div class="tip" id="tip"></div>`;
+
+  const svg = host.firstElementChild, hit = $('#hit', host), cur = $('#cursor', host), tip = $('#tip', host);
+  const show = ev => {
+    const r = svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (W / r.width);
+    const h = Math.max(6, Math.min(22, Math.round((px - M.l) / iw * 16 + 6)));
+    const p = pts.find(q => q.h === h);
+    if (!p) return;
+    cur.setAttribute('x1', x(h)); cur.setAttribute('x2', x(h)); cur.style.display = '';
+    const stormTxt = isStorm(p) ? '⛈️ Gewitterrisiko' : '';
+    // Schmale Charts: kompakte Zeile oben im (meist leeren) Plot statt Kasten, der die Kurven verdeckt
+    if (W < 520) {
+      const vals = models.filter(m => p.per[m.id]).map(m =>
+        `<span class="mv"><span class="dot" style="background:var(${m.css})"></span>${kn(p.per[m.id].spd)}</span>`).join('');
+      tip.innerHTML = `<b>${esc(day.name)} ${pad2(h)}:00</b> · <b>${kn(p.c.spd)} kn</b> · Böen ${kn(p.c.gust)} · ${dirName(p.c.dir)}${stormTxt ? ' · ' + stormTxt : ''}
+        <div class="mvs">${vals}<span class="u">kn je Modell</span></div>`;
+      tip.classList.add('strip');
+      tip.style.display = 'block';
+      tip.style.left = '0'; tip.style.right = '0'; tip.style.top = '0';
+      return;
+    }
+    tip.classList.remove('strip');
+    tip.style.right = 'auto';
+    const rows = models.filter(m => p.per[m.id]).map(m =>
+      `<div class="row"><span><span class="dot" style="background:var(${m.css})"></span>${m.label}</span><span>${kn(p.per[m.id].spd)} kn</span></div>`).join('');
+    tip.innerHTML = `<b>${esc(day.name)} ${pad2(h)}:00</b>
+      <div class="row"><span><strong>Konsens</strong></span><strong>${kn(p.c.spd)} kn</strong></div>
+      <div class="row"><span>Böen</span><span>${kn(p.c.gust)} kn</span></div>
+      <div class="row"><span>Richtung</span><span>${dirName(p.c.dir)} ${Math.round(p.c.dir)}°</span></div>
+      ${stormTxt ? `<div class="row"><span>${stormTxt}</span><span></span></div>` : ''}
+      <hr style="border:0;border-top:1px solid var(--line);margin:5px 0">${rows}`;
+    tip.style.display = 'block';
+    const tw = tip.offsetWidth;
+    let left = x(h) * (r.width / W) + 12;
+    if (left + tw > r.width) left = x(h) * (r.width / W) - tw - 12;
+    tip.style.left = Math.max(0, left) + 'px';
+    tip.style.top = '8px';
+  };
+  const hide = () => { cur.style.display = 'none'; tip.style.display = 'none'; };
+  hit.addEventListener('pointermove', show);
+  hit.addEventListener('pointerdown', show);
+  // Touch: Tooltip bleibt nach dem Loslassen stehen (Tippen ausserhalb schliesst ihn, siehe unten)
+  hit.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') hide(); });
+  hit.addEventListener('pointercancel', hide);
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, a[data-scroll]');
+  if (!t) return;
+  if (t.dataset.day != null && state.data) return selectDay(+t.dataset.day);
+  if (t.dataset.model) { state.off.has(t.dataset.model) ? state.off.delete(t.dataset.model) : state.off.add(t.dataset.model); return renderForecast(); }
+  if (t.dataset.overlay) return setOverlay(t.dataset.overlay);
+  if (t.hasAttribute('data-maplock')) {
+    state.mapActive = !state.mapActive;
+    t.setAttribute('aria-pressed', String(state.mapActive));
+    t.textContent = mapLockLabel();
+    return applyMapLock();
+  }
+  if (t.hasAttribute('data-retry')) { cache.delete(state.spot.id); return setSpot(state.spot.id); }
+  if (t.dataset.scroll !== undefined) { e.preventDefault(); $(t.getAttribute('href')).scrollIntoView(); }
+});
+
+// Tippen ausserhalb des Charts schliesst den (auf Touch stehenbleibenden) Tooltip
+document.addEventListener('pointerdown', e => {
+  if (e.target.closest && e.target.closest('#chart')) return;
+  const tip = $('#tip'), cur = $('#cursor');
+  if (tip) tip.style.display = 'none';
+  if (cur) cur.style.display = 'none';
+});
+
+// Höhe des mitlaufenden Headers als CSS-Variable, damit Sprungziele nicht darunter verschwinden
+const topBar = $('.top');
+const syncHdr = () => {
+  const sticky = getComputedStyle(topBar).position === 'sticky';
+  document.documentElement.style.setProperty('--hdr', (sticky ? topBar.offsetHeight : 0) + 'px');
+};
+syncHdr();
+window.addEventListener('resize', syncHdr);
+if ('ResizeObserver' in window) new ResizeObserver(syncHdr).observe(topBar);
+
+if ('ResizeObserver' in window) {
+  let last = 0;
+  new ResizeObserver(entries => {
+    const w = Math.round(entries[0].contentRect.width);
+    if (w && w !== last) { last = w; drawChart(); }
+  }).observe($('#forecast'));
+}
+
+setSpot('gaesi');
+})();
+</script>
+</body>
+</html>
