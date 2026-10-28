@@ -71,10 +71,15 @@ button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 /* ---- Navbar ---- */
 .top{background:var(--nav);color:var(--nav-ink);position:sticky;top:0;z-index:20;box-shadow:0 2px 4px rgba(0,0,0,.25)}
 .top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:10px;padding-bottom:8px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;flex:1 1 0;min-width:0}   /* nimmt den Platz neben dem Knopf, der Titel bricht um */
 .brand svg{width:30px;height:30px;color:var(--nav-accent);flex:none}
 .brand h1{margin:0;font-size:1.2rem;font-weight:500;line-height:1.2;letter-spacing:.01em}
 .brand p{margin:0;font-size:.8rem;color:var(--nav-muted)}
+/* Knopf oben rechts: "Gross" verlinkt auf ?gross, in der grossen Ansicht steht dort "Klein" mit ?normal */
+.size-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:72px;min-height:50px;padding:4px 12px;border-radius:var(--r);background:var(--nav-accent);color:#0b1d2c;text-decoration:none;font-size:1.05rem;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.size-btn:active{filter:brightness(.92)}
+@media (hover:hover){.size-btn:hover{filter:brightness(1.08)}}
+.gross .to-big,html:not(.gross) .to-small{display:none}
 .anchors{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.12)}
 .anchors::-webkit-scrollbar{display:none}
 .anchors a{flex:none;text-decoration:none;color:var(--nav-muted);font-size:.88rem;padding:8px 14px 6px;border-bottom:2px solid transparent}
@@ -261,6 +266,7 @@ html.gross{font-size:20px;--muted:#4b5963}
 .gross .hours,.gross .hours-ax{flex:1 0 100%}
 .gross .hours i{height:16px}
 .gross .axis text{font-size:14px}
+.gross .spot-info{display:none}   /* Fakten zu Gäsi, Walensee und Boot samt "Vor dem Ablegen" und "So wird bewertet" */
 </style>
 </head>
 <body>
@@ -273,6 +279,8 @@ html.gross{font-size:20px;--muted:#4b5963}
       </svg>
       <div><h1>Segel Check für Sushma, Thomas und Jeremias und gegebenfalls Irmi</h1><p>Walensee · Gäsi · Esse 750</p></div>
     </div>
+    <a class="size-btn to-big" href="?gross" aria-label="Grosse Schrift einschalten">Gross</a>
+    <a class="size-btn to-small" href="?normal" aria-label="Normale Schrift einschalten">Klein</a>
   </div>
   <nav class="wrap anchors" aria-label="Abschnitte">
     <a href="#sec-fazit" data-scroll>Fazit</a>
@@ -773,7 +781,7 @@ function renderFazit() {
     <div class="days">${cards}</div>
     <p class="hours-legend" aria-hidden="true">${legend}</p>
     ${detail}
-    <div class="card">
+    <div class="card spot-info">
       <strong>${esc(spot.overview)}</strong>
       <ul class="facts" style="margin-top:10px">${spot.facts.map(f => `<li>${f}</li>`).join('')}</ul>
       <details><summary>Vor dem Ablegen</summary>
