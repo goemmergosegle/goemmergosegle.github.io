@@ -94,42 +94,44 @@ section>h2 small{font-weight:400;color:var(--muted);font-size:.82rem}
 .state button:active{background:var(--surface-2)}
 @media (hover:hover){.state button:hover{background:var(--surface-2)}}
 .emo{display:inline-block;margin-right:.35em;font-style:normal;font-weight:400;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
-.badge .emo,.chip .emo{font-size:1.3em;margin-right:.3em;vertical-align:-.12em}
-.headline .emo{margin-right:.4em}
 .state .emo{display:block;margin:0 0 6px;font-size:1.9rem}
 
-/* ---- Fazit ---- */
-.headline{font-size:1.3rem;line-height:1.3;font-weight:500;margin:0 0 4px}
-.lead{margin:0;color:var(--muted)}
-.days{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+/* ---- Fazit: oben die Antwort, darunter die Tage als Kacheln mit Stundenbalken ---- */
+/* .st-<Zustand> setzt die Zustandsfarbe --st, Rand und Tönung von Antwort, Kacheln und Detail leiten sich davon ab */
+.st-top{--st:var(--go-fill)} .st-ok{--st:var(--ok-line)} .st-maybe{--st:var(--maybe-fill)} .st-calm{--st:var(--calm-fill)}
+.st-strong,.st-no{--st:var(--no-fill)} .st-storm{--st:var(--storm-fill)} .st-over{--st:var(--over-fill)}
+.hero{display:flex;align-items:center;gap:16px;margin-bottom:12px;border-left:4px solid var(--st,var(--line-2))}
+.hero-ico{flex:none;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--st,var(--line-2)) 24%,var(--surface))}
+.hero-ico .emo{margin:0;font-size:2rem}
+.hero-k{margin:0;font-size:.82rem;color:var(--muted)}
+.headline{font-size:1.65rem;line-height:1.2;font-weight:500;margin:0 0 2px}
+.hero-sub{margin:0;font-weight:500}
+.lead{margin:2px 0 0;color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:6px}
 .day{
-  text-align:left;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--line-2);border-radius:var(--r);
-  box-shadow:var(--elev1);padding:12px 14px;display:flex;flex-direction:column;gap:3px;transition:box-shadow .15s;
+  text-align:left;background:color-mix(in srgb,var(--st,transparent) 9%,var(--surface));border:1px solid var(--line);border-top:4px solid var(--st,var(--line-2));border-radius:var(--r);
+  box-shadow:var(--elev1);padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0;transition:box-shadow .15s;
 }
 @media (hover:hover){.day:not([aria-pressed="true"]):hover{box-shadow:var(--elev2)}}
-.day:active{background:var(--surface-2)}
-.day:has(.badge.top){border-top-color:var(--go-fill)}
-.day:has(.badge.ok){border-top-color:var(--ok-line)}
-.day:has(.badge.maybe){border-top-color:var(--maybe-fill)}
-.day:has(.badge.calm){border-top-color:var(--calm-fill)}
-.day:has(.badge.strong),.day:has(.badge.no){border-top-color:var(--no-fill)}
-.day:has(.badge.storm){border-top-color:var(--storm-fill)}
-.day:has(.badge.over){border-top-color:var(--over-fill)}
+.day:active{filter:brightness(.96)}
 .day[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent),var(--elev2)}
 .day-name{font-weight:500}
 .day-name small{font-weight:400;color:var(--muted);margin-left:5px}
-.badge,.chip{display:inline-block;font-size:.75rem;font-weight:700;line-height:1.5;padding:1px 8px;border-radius:3px;letter-spacing:.02em;white-space:nowrap}
-.badge{align-self:flex-start;margin:4px 0 2px}
-.badge.top{background:var(--go-fill);color:var(--go-ink)}
-.badge.ok{background:var(--ok-fill);color:var(--ok-ink);box-shadow:inset 0 0 0 1px var(--ok-line)}
-.badge.maybe{background:var(--maybe-fill);color:var(--maybe-ink)}
-.badge.calm{background:var(--calm-fill);color:var(--calm-ink)}
-.badge.strong,.badge.no{background:var(--no-fill);color:var(--no-ink)}
-.badge.storm{background:var(--storm-fill);color:var(--storm-ink)}
-.badge.over{background:var(--over-fill);color:var(--over-ink)}
+.day-state{display:flex;align-items:center;gap:6px;font-size:.86rem;font-weight:500;margin-top:2px}
+.day-state .emo{margin:0;font-size:1.5rem}
 .day-main{font-size:1.15rem;font-weight:500}
 .day-sub{font-size:.86rem;color:var(--muted)}
-.day-agree{font-size:.8rem;color:var(--muted);margin-top:2px}
+.day-agree{font-size:.8rem;color:var(--muted)}
+.hours{display:grid;grid-template-columns:repeat(var(--n,11),1fr);gap:2px;margin-top:auto;padding-top:8px}   /* unten in der Kachel, damit die Balken auf einer Linie stehen */
+.hours i,.hours-legend i{height:10px;border-radius:2px;background:var(--hc)}
+.hours i.past{opacity:.3}
+.h-top{--hc:var(--go-fill)} .h-ok{--hc:var(--ok-line)} .h-calm{--hc:var(--calm-fill)} .h-strong{--hc:var(--no-fill)} .h-storm{--hc:var(--storm-fill)} .h-night,.h-none{--hc:var(--line-2)}
+.hours-ax{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:1px}
+.hours-legend{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:.78rem;color:var(--muted);margin:0 0 10px}
+.hours-legend span{display:inline-flex;align-items:center;gap:5px}
+.hours-legend i{width:10px;flex:none}
+.day-detail{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin-bottom:12px;border-left:4px solid var(--st,var(--line-2));font-size:.94rem}
+.day-detail strong{flex:1 0 100%;font-weight:500}
 .note{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-bd);border-left:4px solid var(--maybe-fill);border-radius:var(--r);padding:10px 14px;margin:0 0 12px;font-size:.92rem}
 .facts{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .facts li{padding-left:18px;position:relative;font-size:.94rem}
@@ -218,10 +220,17 @@ tbody tr:nth-child(even){background:var(--surface-2)}
   .brand svg{width:26px;height:26px}
   .brand h1{font-size:1.05rem}
   .anchors a{font-size:.9rem;padding:9px 12px 7px}
-  .days{grid-template-columns:1fr;gap:10px}
-  .day{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 10px}
-  .day-name{flex:1 0 100%}
-  .badge{margin:0}
+  /* Handy: Antwort kompakter, die drei Tage bleiben nebeneinander, Details stehen unter den Kacheln */
+  .hero{gap:12px}
+  .hero-ico{width:48px;height:48px}
+  .hero-ico .emo{font-size:1.6rem}
+  .headline{font-size:1.35rem}
+  .days{gap:6px}
+  .day{padding:8px 8px 7px}
+  .day-name small{display:block;margin:0}
+  .day-state{flex-direction:column;align-items:flex-start;gap:0;font-size:.8rem;line-height:1.25}
+  .day-main{font-size:1rem}
+  .day-sub{display:none}
   .chart-head{flex-direction:column;align-items:stretch}
   .frame iframe{height:min(62vh,480px);min-height:320px}
   .overlay-bar .sp{display:none}
@@ -496,7 +505,7 @@ function evaluate(spot, day, now) {
     const long = win.items.length >= CFG.GO_HOURS;
     const ideal = ev.mean >= CFG.IDEAL_MIN && ev.mean <= CFG.IDEAL_MAX && ev.gust <= CFG.GUST_IDEAL && !gusty;
     ev.rating = !long ? 'maybe' : ideal ? 'top' : 'ok';
-    ev.main = `${win.start}-${win.end + 1} Uhr`;
+    ev.main = ev.short = `${win.start}-${win.end + 1} Uhr`;
     ev.sub = `Ø ${kn(ev.mean)} kn · Böen ${kn(ev.gust)} kn · ${dirName(ev.dir)}`;
     ev.tip = ev.rating === 'top' ? 'Gleichmässiger, mässiger Wind: ideal, um Stunden zu sammeln.'
       : !long ? `Nur ${win.items.length} Stunden am Stück passend.`
@@ -507,21 +516,36 @@ function evaluate(spot, day, now) {
   } else if (windOnly && windOnly.items.length >= 2) {
     ev.rating = 'storm';
     ev.main = `Gewitterrisiko ${ev.storm.from}-${ev.storm.to} Uhr`;
+    ev.short = `${ev.storm.from}-${ev.storm.to} Uhr`;
     ev.sub = 'Der Wind würde passen, aber die Modelle zeigen Gewitterpotenzial';
   } else if (maxSpd < CFG.MIN) {
     ev.rating = 'calm';
     ev.main = `max. Ø ${maxSpd.toFixed(1)} kn`;   // eine Nachkommastelle, sonst stünde 2.6 kn als "3 kn" neben "unter 3 kn"
+    ev.short = `max. ${maxSpd.toFixed(1)} kn`;
     ev.sub = `Flaute (unter ${CFG.MIN} kn), höchstens Dümpeln mit Motor`;
   } else if (maxSpd > CFG.MAX || maxGust > CFG.GUST_MAX) {
     ev.rating = 'strong';
     ev.main = `Ø bis ${kn(maxSpd)} kn, Böen ${kn(maxGust)} kn`;
+    ev.short = `Böen ${kn(maxGust)} kn`;
     ev.sub = `Zu viel Wind für Einsteiger (Ø über ${CFG.MAX} kn oder Böen über ${CFG.GUST_MAX} kn)`;
   } else {
     ev.rating = 'no';
-    ev.main = `max. Ø ${kn(maxSpd)} kn`;
+    ev.main = ev.short = `max. Ø ${kn(maxSpd)} kn`;
     ev.sub = 'Kein zusammenhängendes Fenster mit passendem Wind';
   }
   return ev;
+}
+
+// Zustand einer einzelnen Stunde für den Balken in der Tageskachel, mit denselben Grenzen wie evaluate()
+const HOUR = { top: 'ideal', ok: 'segelbar', calm: 'Flaute', strong: 'zu viel Wind', storm: 'Gewitter', night: 'dunkel', none: 'keine Daten' };
+function hourState(day, x) {
+  if (!x || !x.c) return 'none';
+  if (x.h < day.from || x.h + 1 > day.until) return 'night';
+  if (isStorm(x)) return 'storm';
+  if (x.c.spd < CFG.MIN) return 'calm';
+  if (x.c.spd > CFG.MAX || x.c.gust > CFG.GUST_MAX) return 'strong';
+  const ideal = x.c.spd >= CFG.IDEAL_MIN && x.c.spd <= CFG.IDEAL_MAX && x.c.gust <= CFG.GUST_IDEAL && x.c.gust - x.c.spd <= CFG.GUSTY;
+  return ideal ? 'top' : 'ok';
 }
 
 /* ---------- Rendering ---------- */
@@ -607,53 +631,89 @@ const STATE = {
 };
 const LOADING = `<div class="card state">${emo('⏳')}Lade Vorhersage …</div>`;
 
+// Balken von CFG.H0 bis CFG.H1 Uhr, eine Zelle pro Stunde; schon vergangene Stunden von heute sind blass
+function hoursBar(day, now) {
+  const cells = [];
+  for (let h = CFG.H0; h <= CFG.H1; h++) {
+    const x = day.hours.find(q => q.h === h);
+    const s = hourState(day, x);
+    const past = day.isToday && x && x.t.slice(0, 13) < now.key;
+    cells.push(`<i class="h-${s}${past ? ' past' : ''}" title="${pad2(h)}:00 ${HOUR[s]}"></i>`);
+  }
+  return `<span class="hours" style="--n:${cells.length}" aria-hidden="true">${cells.join('')}</span>
+      <span class="hours-ax" aria-hidden="true"><span>${CFG.H0}</span><span>${Math.round((CFG.H0 + CFG.H1) / 2)}</span><span>${CFG.H1}</span></span>`;
+}
+
 function renderFazit() {
-  const { spot, days } = state.data;
+  const { spot, days, now } = state.data;
   const first = r => days.find(d => d.ev.rating === r);
   const best = first('top') || first('ok') || first('maybe');
-  let head, lead;
+  let kicker, head, sub = '', lead;
   if (best && (best.ev.rating === 'top' || best.ev.rating === 'ok')) {
-    head = `Bestes Fenster: ${best.name} ${best.ev.main}`;
-    lead = `${best.ev.sub}. ${best.ev.tip}`;
+    kicker = 'Bestes Fenster';
+    head = `${best.name} ${best.ev.main}`;
+    sub = best.ev.sub;
+    lead = best.ev.tip;
   } else if (best) {
-    head = `Knapp: ${best.name} ${best.ev.main}`;
-    lead = `${best.ev.sub}. ${best.ev.tip} Vor Ort prüfen.`;
+    kicker = 'Knapp';
+    head = `${best.name} ${best.ev.main}`;
+    sub = best.ev.sub;
+    lead = `${best.ev.tip} Vor Ort prüfen.`;
   } else {
-    head = 'In den nächsten 3 Tagen kein brauchbares Segelfenster';
+    kicker = 'Die nächsten 3 Tage';
+    head = 'Kein brauchbares Segelfenster';
     lead = 'Die Modelle zeigen Flaute, zu viel Wind für Einsteiger oder Gewitterrisiko.';
   }
   const lead0 = days.find(d => d.ev.rating !== 'over');
-  const headEmoji = STATE[best ? best.ev.rating : lead0 ? lead0.ev.rating : 'no'].emoji;
+  const headState = best ? best.ev.rating : lead0 ? lead0.ev.rating : 'no';
 
   const rough = days.filter(d => d.ev.storm || (d.ev.maxGust ?? 0) >= CFG.STRONG_WARN);
   const hint = rough.length
     ? `<p class="note"><strong>Wetter-Achtung ${rough.map(d => esc(d.name)).join(', ')}:</strong> Die Modelle zeigen Gewitterpotenzial oder Böen ab ${CFG.STRONG_WARN} kn (Niveau der Starkwindwarnung). Vor dem Auslaufen die <a href="${WARN_URL}" target="_blank" rel="noopener">MeteoSchweiz-Warnkarte</a> ansehen.</p>`
     : '';
 
-  const cards = days.map(d => {
-    const storm = d.ev.storm && d.ev.rating !== 'storm' ? `<span class="day-agree">${emo('⛈️')}Gewitterrisiko ${d.ev.storm.from}-${d.ev.storm.to} Uhr</span>` : '';
-    return `<button type="button" class="day" data-day="${d.idx}" aria-pressed="${d.idx === state.day}">
+  const cards = days.map(d => `<button type="button" class="day st-${d.ev.rating}" data-day="${d.idx}" aria-pressed="${d.idx === state.day}">
       <span class="day-name">${esc(d.name)}<small>${esc(d.sub)}</small></span>
-      <span class="badge ${d.ev.rating}">${emo(STATE[d.ev.rating].emoji)}${STATE[d.ev.rating].label}</span>
-      <span class="day-main">${d.ev.main ?? '-'}</span>
+      <span class="day-state">${emo(STATE[d.ev.rating].emoji)}${STATE[d.ev.rating].label}</span>
+      <span class="day-main">${d.ev.short ?? '-'}</span>
       <span class="day-sub">${d.ev.sub ?? 'Kein bewertbarer Zeitraum mehr'}</span>
-      ${d.ev.agree ? `<span class="day-agree">${emo(d.ev.agreeEmoji)}${d.ev.agree}</span>` : ''}${storm}
-    </button>`;
-  }).join('');
+      ${hoursBar(d, now)}
+    </button>`).join('');
+  const legend = ['top', 'ok', 'calm', 'strong', 'storm', 'night'].map(k => `<span><i class="h-${k}"></i>${HOUR[k]}</span>`).join('') + '<span>blass = vorbei</span>';
+
+  // Details zum gewählten Tag: was in den schmalen Kacheln keinen Platz hat
+  const sel = days[state.day];
+  const extra = [
+    sel.ev.agree ? emo(sel.ev.agreeEmoji) + sel.ev.agree : '',
+    sel.ev.storm && sel.ev.rating !== 'storm' ? `${emo('⛈️')}Gewitterrisiko ${sel.ev.storm.from}-${sel.ev.storm.to} Uhr` : ''
+  ].filter(Boolean).map(t => `<span class="day-agree">${t}</span>`).join('');
+  const detail = `<div class="card day-detail st-${sel.ev.rating}">
+      <strong>${emo(STATE[sel.ev.rating].emoji)}${esc(sel.name)} ${esc(sel.sub)}: ${STATE[sel.ev.rating].label}${sel.ev.main ? ', ' + esc(sel.ev.main) : ''}</strong>
+      <span class="muted">${esc(sel.ev.sub ?? 'Kein bewertbarer Zeitraum mehr')}${sel.ev.tip ? '. ' + esc(sel.ev.tip) : ''}</span>
+      ${extra}
+    </div>`;
 
   $('#fazit').innerHTML = `
-    <div class="card" style="margin-bottom:12px">
-      <p class="headline">${emo(headEmoji)}${esc(head)}</p><p class="lead" style="margin:0">${esc(lead)}</p>
+    <div class="card hero st-${headState}">
+      <div class="hero-ico">${emo(STATE[headState].emoji)}</div>
+      <div>
+        <p class="hero-k">${kicker}</p>
+        <p class="headline">${esc(head)}</p>
+        ${sub ? `<p class="hero-sub">${esc(sub)}</p>` : ''}
+        <p class="lead">${esc(lead)}</p>
+      </div>
     </div>
     ${hint}
     <div class="days">${cards}</div>
+    <p class="hours-legend" aria-hidden="true">${legend}</p>
+    ${detail}
     <div class="card">
       <strong>${esc(spot.overview)}</strong>
       <ul class="facts" style="margin-top:10px">${spot.facts.map(f => `<li>${f}</li>`).join('')}</ul>
       <details><summary>Vor dem Ablegen</summary>
         <ul>
           <li>Warnkarte der MeteoSchweiz für Seen und Gewitter ansehen, dazu eine Webcam: Kräuselung und Schaumkronen zeigen den Wind.</li>
-          <li>Rettungswesten an, Handy wasserdicht, Akku des Elektromotors geladen. Das Wasser bleibt auch im Sommer kalt.</li>
+          <li>Rettungswesten an, Handy wasserdicht, Motor hat noch Benzin. Das Wasser bleibt auch im Sommer kalt.</li>
           <li>Reffen vor dem Auslaufen, nicht erst auf dem See. Lieber früh die Fock einrollen.</li>
           <li>Zurück im Hafen sein, bevor es dunkel wird. Die Seite bewertet nur Stunden bei Tageslicht.</li>
           <li>Bei Gewitter in der Nähe, dunkler Wolkenwand oder plötzlich auffrischendem Wind sofort zum nächsten Hafen.</li>
@@ -666,6 +726,7 @@ function renderFazit() {
           <li>„Ideal zum Üben“: mindestens ${CFG.GO_HOURS} Stunden am Stück, Ø ${CFG.IDEAL_MIN}-${CFG.IDEAL_MAX} kn, Böen höchstens ${CFG.GUST_IDEAL} kn und im Mittel höchstens ${CFG.GUSTY} kn über dem Wind. „Segelbar“: ${CFG.GO_HOURS} Stunden am Stück, aber leichter, frischer oder böiger. „Prüfen“: nur 2 Stunden.</li>
           <li>Ohne Fenster nennt der Zustand den Grund: „Flaute“ (unter ${CFG.MIN} kn), „Zu viel Wind“ (Ø über ${CFG.MAX} kn oder Böen über ${CFG.GUST_MAX} kn), „Gewitter“ oder „Besser nicht“.</li>
           <li>Die Zustände: ${Object.values(STATE).map(s => emo(s.emoji) + s.label).join(' · ')}.</li>
+          <li>Der Balken in jeder Tageskachel zeigt ${CFG.H0} bis ${CFG.H1} Uhr Stunde für Stunde, mit denselben Grenzen. Eine Stunde ist „ideal“, wenn sie für sich allein die Werte von „Ideal zum Üben“ erfüllt. Ob daraus ein Fenster wird, entscheidet die Zahl der Stunden am Stück.</li>
           <li>Die Grenzen sind bewusst tief gewählt (Einsteiger, Esse 750 mit viel Segel) und eine Annahme, bei Bedarf in <code>CFG</code> anpassen. Das ist eine Faustregel auf Modelldaten, keine Live-Messung. Am Seeende bei Weesen und zwischen den Bergflanken kann der Wind deutlich vom Modell abweichen.</li>
         </ul>
       </details>
